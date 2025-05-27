@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.inventory.material.mapper.MaterialMapper">
+
+    <resultMap id="MaterialResultMap" type="com.example.inventory.material.entity.Material">
+        <id property="id" column="id"/>
+        <result property="materialName" column="material_name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="specificationsJson" column="specifications"/> <!-- 假设数据库字段是 specifications (JSONB或TEXT) -->
+        <result property="description" column="description"/>
+    </resultMap>
+
+    <insert id="insertMaterial" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO materials (material_name, category_id, specifications, description)
+        VALUES (#{materialName}, #{categoryId}, CAST(#{specificationsJson} AS JSONB), #{description}) 
+        <!-- 注意: CAST(... AS JSONB) 是PostgreSQL特有的，如果字段是TEXT，则不需要CAST -->
+        <!-- 如果 specificationsJson 为 null, 插入 NULL. 如果Postgresql JSONB字段不允许NULL，则需要处理 -->
+    </insert>
+
+    <select id="findById" resultMap="MaterialResultMap">
+        SELECT id, material_name, category_id, specifications, description 
+        FROM materials 
+        WHERE id = #{id}
+    </select>
+
+</mapper>

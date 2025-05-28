@@ -11,7 +11,7 @@
   "materialName": "物资名称（字符串，必填）",
   "categoryId": "分类ID（数值）",
   "specifications": {
-    "品牌": "Dell",  // 动态键值对，根据分类属性扩展
+    "品牌": "Dell",  /* 动态键值对，根据分类属性扩展 */
     "内存": "16GB"
   },
   "description": "描述文本（可选）"
@@ -29,7 +29,7 @@
     {
       "id": 2048,
       "name": "笔记本电脑",
-      "children": []  // 嵌套结构实现多级树形
+      "children": []  /* 嵌套结构实现多级树形 */
     }
   ]
 }
@@ -127,7 +127,7 @@
     {
       "id": 2048,
       "label": "电脑",
-      "children": []  // 支持无限层级嵌套
+      "children": []  /* 支持无限层级嵌套 */
     }
   ]
 }
@@ -139,8 +139,8 @@
 ```json
 {
   "draggedNodeId": 2048,
-  "targetParentId": 1024,  // 拖拽后的父节点ID
-  "newIndex": 0  // 在父节点中的排序位置
+  "targetParentId": 1024,  /* 拖拽后的父节点ID */
+  "newIndex": 0  /* 在父节点中的排序位置 */
 }
 ```
 

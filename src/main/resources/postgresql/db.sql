@@ -1,45 +1,77 @@
--- 分类表
-CREATE TABLE categories (
-    id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    parent_id BIGINT,
-    sort_order INTEGER DEFAULT 0,
-    CONSTRAINT fk_parent_category FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
-);
-CREATE INDEX idx_categories_parent_id ON categories(parent_id);
-CREATE INDEX idx_categories_sort_order ON categories(sort_order);
-
--- 物资表
-CREATE TABLE materials (
-    id BIGSERIAL PRIMARY KEY,
-    material_name VARCHAR(255) NOT NULL,
-    category_id BIGINT,
-    specifications JSONB, -- 使用JSONB存储动态规格
-    description TEXT,
-    CONSTRAINT fk_material_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
-);
-CREATE INDEX idx_materials_category_id ON materials(category_id);
-
--- 分类扩展属性定义表
-CREATE TABLE category_attributes (
-    id BIGSERIAL PRIMARY KEY,
-    category_id BIGINT NOT NULL,
-    attribute_name VARCHAR(100) NOT NULL, -- 显示名称
-    attribute_key VARCHAR(100) NOT NULL,  -- 存储键
-    attribute_type VARCHAR(50) NOT NULL,  -- STRING, NUMBER, BOOLEAN, SELECT
-    options TEXT,                         -- SELECT类型的选项，可以是JSON数组字符串
-    is_required BOOLEAN DEFAULT FALSE,
-    sort_order INTEGER DEFAULT 0,
-    CONSTRAINT fk_attribute_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
-    UNIQUE (category_id, attribute_key) -- 同一分类下属性键唯一
+-- 创建角色表（先创建，因为用户表需要引用它）
+CREATE TABLE tb_role
+(
+    role_id     SERIAL PRIMARY KEY,
+    role_name   VARCHAR(50) NOT NULL,
+    permissions TEXT
 );
 
--- 审批状态同步记录表
-CREATE TABLE approval_status_sync (
-    id BIGSERIAL PRIMARY KEY,
-    approval_id VARCHAR(100) NOT NULL, -- 飞书或其他审批系统的审批ID
-    status VARCHAR(50),
-    sync_timestamp TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    details TEXT
+-- 创建用户表
+CREATE TABLE tb_user
+(
+    user_id    SERIAL PRIMARY KEY,
+    username   VARCHAR(50)  NOT NULL UNIQUE,
+    password   VARCHAR(255) NOT NULL,
+    role_id    INTEGER REFERENCES tb_role (role_id),
+    department VARCHAR(50)
 );
-CREATE INDEX idx_approval_status_sync_approval_id ON approval_status_sync(approval_id);
+
+-- 创建物资分类表
+CREATE TABLE tb_material_category
+(
+    category_id   SERIAL PRIMARY KEY,
+    category_name VARCHAR(50) NOT NULL
+);
+
+-- 创建物资表
+CREATE TABLE tb_material
+(
+    material_id   SERIAL PRIMARY KEY,
+    material_name VARCHAR(100) NOT NULL,
+    category_id   INTEGER REFERENCES tb_material_category (category_id),
+    is_expensive  SMALLINT              DEFAULT 0 CHECK (is_expensive IN (0, 1)),
+    sn_code       VARCHAR(50),
+    quantity      INTEGER      NOT NULL DEFAULT 0,
+    usage_limit   DATE,
+    status        VARCHAR(20)  NOT NULL
+);
+
+-- 创建物资使用记录表
+CREATE TABLE tb_material_usage_record
+(
+    record_id     SERIAL PRIMARY KEY,
+    material_id   INTEGER REFERENCES tb_material (material_id),
+    user_id       INTEGER REFERENCES tb_user (user_id),
+    borrow_time   TIMESTAMP NOT NULL,
+    return_time   TIMESTAMP,
+    usage_project VARCHAR(100)
+);
+
+-- 创建审批表
+CREATE TABLE tb_approval
+(
+    approval_id     SERIAL PRIMARY KEY,
+    material_id     INTEGER REFERENCES tb_material (material_id),
+    user_id         INTEGER REFERENCES tb_user (user_id),
+    approval_reason TEXT        NOT NULL,
+    approval_status VARCHAR(20) NOT NULL,
+    approval_time   TIMESTAMP
+);
+
+-- 创建电池状态表
+CREATE TABLE tb_battery_status
+(
+    status_id     SERIAL PRIMARY KEY,
+    material_id   INTEGER REFERENCES tb_material (material_id),
+    battery_level INTEGER CHECK (battery_level BETWEEN 0 AND 100),
+    battery_health VARCHAR(20),
+    record_time TIMESTAMP NOT NULL
+);
+
+-- 创建报销关联表
+CREATE TABLE tb_reimbursement_relation
+(
+    relation_id      SERIAL PRIMARY KEY,
+    material_id      INTEGER REFERENCES tb_material (material_id),
+    reimbursement_id VARCHAR(50) NOT NULL
+);

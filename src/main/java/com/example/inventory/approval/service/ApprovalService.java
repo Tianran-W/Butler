@@ -36,7 +36,7 @@ public class ApprovalService {
         } catch (Exception e) {
             // 处理发送失败的情况
             // log.error("发送飞书通知失败: {}", e.getMessage());
-            approvalSyncService.syncApprovalStatus(notifyDTO.getApprovalId(), "FEISHU_NOTIFICATION_FAILED", e.getMessage());
+            approvalSyncService.syncApprovalStatus(notifyDTO.getApprovalId(), "FEISHU_NOTIFICATION_FAILED", e.toString());
             return new ApprovalNotifyResponseDTO(null, false);
         }
     }

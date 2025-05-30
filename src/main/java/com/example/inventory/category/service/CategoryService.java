@@ -74,6 +74,9 @@ public class CategoryService {
     }
     @Transactional
     public void handleDragAndDrop(CategoryDragDTO dragDTO) {
+        if (dragDTO.getNewIndex() == null) {
+            throw new IllegalArgumentException("新位置索引不能为空");
+        }
         Long draggedNodeId = dragDTO.getDraggedNodeId();
         Long targetParentId = dragDTO.getTargetParentId();
         int newIndex = dragDTO.getNewIndex();
@@ -95,7 +98,9 @@ public class CategoryService {
         int currentIdx = 0;
         for (Category sibling : originalSiblings) {
             if (!Objects.equals(sibling.getCategory_id(), draggedNodeId)) {
-                if (sibling.getSort_order() != currentIdx) {
+                Integer currentSortOrder = sibling.getSort_order();
+                int currentOrder = currentSortOrder != null ? currentSortOrder : 0;
+                if (currentOrder != currentIdx) {
                     categoryMapper.updateSortOrder(sibling.getCategory_id(), currentIdx);
                 }
                 currentIdx++;

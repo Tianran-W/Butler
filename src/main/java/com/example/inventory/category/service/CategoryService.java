@@ -129,7 +129,7 @@ public class CategoryService {
         category.setCategory_name(name);
         category.setParent_id(parentId);
         if (sortOrder == null) {
-            sortOrder = categoryMapper.countChildrenByParentId(parentId); 
+            sortOrder = categoryMapper.countChildrenByParentId(parentId);
         }
         category.setSort_order(sortOrder);
         categoryMapper.insertCategory(category);

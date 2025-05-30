@@ -8,6 +8,7 @@ public class MaterialInputDTO {
     @NotNull(message = "分类ID不能为空")
     @Min(value = 1, message = "分类ID无效")
     private Long category_id;
+
     public String getMaterial_name() {
         return material_name;
     }

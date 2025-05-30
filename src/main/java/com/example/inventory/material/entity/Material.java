@@ -9,6 +9,7 @@ public class Material {
     private Integer quantity;
     private Date usage_limit;
     private String status;
+
     public Long getMaterial_id() {
         return material_id;
     }

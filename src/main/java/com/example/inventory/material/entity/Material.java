@@ -1,88 +1,60 @@
 package com.example.inventory.material.entity;
-
-import java.util.Map;
-// import com.fasterxml.jackson.databind.ObjectMapper; // 如果需要手动序列化
-// import com.fasterxml.jackson.core.type.TypeReference; // 如果需要手动序列化
-
+import java.util.Date;
 public class Material {
-    private Long id;
-    private String materialName;
-    private Long categoryId;
-    private String specificationsJson; // 存储JSON字符串
-    private transient Map<String, Object> specificationsMap; // 瞬态字段，不直接持久化
-    private String description;
-
-    // private static final ObjectMapper objectMapper = new ObjectMapper(); // 如果需要手动序列化
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
+    private Long material_id;
+    private String material_name;
+    private Long category_id;
+    private Short is_expensive;
+    private String sn_code;
+    private Integer quantity;
+    private Date usage_limit;
+    private String status;
+    public Long getMaterial_id() {
+        return material_id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setMaterial_id(Long material_id) {
+        this.material_id = material_id;
     }
-
-    public String getMaterialName() {
-        return materialName;
+    public String getMaterial_name() {
+        return material_name;
     }
-
-    public void setMaterialName(String materialName) {
-        this.materialName = materialName;
+    public void setMaterial_name(String material_name) {
+        this.material_name = material_name;
     }
-
-    public Long getCategoryId() {
-        return categoryId;
+    public Long getCategory_id() {
+        return category_id;
     }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory_id(Long category_id) {
+        this.category_id = category_id;
     }
-
-    public String getSpecificationsJson() {
-        return specificationsJson;
+    public Short getIs_expensive() {
+        return is_expensive;
     }
-
-    public void setSpecificationsJson(String specificationsJson) {
-        this.specificationsJson = specificationsJson;
-        // 如果使用手动序列化/反序列化
-        // try {
-        //     if (specificationsJson != null && !specificationsJson.isEmpty()) {
-        //         this.specificationsMap = objectMapper.readValue(specificationsJson, new TypeReference<Map<String, Object>>() {});
-        //     } else {
-        //         this.specificationsMap = null;
-        //     }
-        // } catch (Exception e) {
-        //     // 处理反序列化错误
-        //     this.specificationsMap = null;
-        // }
+    public void setIs_expensive(Short is_expensive) {
+        this.is_expensive = is_expensive;
     }
-
-    public Map<String, Object> getSpecificationsMap() {
-        return specificationsMap;
+    public String getSn_code() {
+        return sn_code;
     }
-
-    public void setSpecificationsMap(Map<String, Object> specificationsMap) {
-        this.specificationsMap = specificationsMap;
-        // 如果使用手动序列化/反序列化
-        // try {
-        //     if (specificationsMap != null && !specificationsMap.isEmpty()) {
-        //         this.specificationsJson = objectMapper.writeValueAsString(specificationsMap);
-        //     } else {
-        //         this.specificationsJson = null;
-        //     }
-        // } catch (Exception e) {
-        //     // 处理序列化错误
-        //     this.specificationsJson = null;
-        // }
+    public void setSn_code(String sn_code) {
+        this.sn_code = sn_code;
     }
-
-    public String getDescription() {
-        return description;
+    public Integer getQuantity() {
+        return quantity;
     }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
-
+    public Date getUsage_limit() {
+        return usage_limit;
+    }
+    public void setUsage_limit(Date usage_limit) {
+        this.usage_limit = usage_limit;
+    }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

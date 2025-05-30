@@ -1,41 +1,17 @@
 package com.example.inventory.category.entity;
-
 public class Category {
-    private Long id;
-    private String name;
-    private Long parentId; // 父分类ID，顶级分类此字段为null
-    private Integer sortOrder; // 同级分类下的排序字段
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
+    private Long category_id;
+    private String category_name;
+    public Long getCategory_id() {
+        return category_id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setCategory_id(Long category_id) {
+        this.category_id = category_id;
     }
-
-    public String getName() {
-        return name;
+    public String getCategory_name() {
+        return category_name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public Integer getSortOrder() {
-        return sortOrder;
-    }
-
-    public void setSortOrder(Integer sortOrder) {
-        this.sortOrder = sortOrder;
+    public void setCategory_name(String category_name) {
+        this.category_name = category_name;
     }
 }

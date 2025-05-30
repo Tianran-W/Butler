@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.LendAndReturn.Lend.mapper.BorrowRecordMapper">
+    <select id="selectByUserIdWithDetail" resultType="com.example.LendAndReturn.Lend.entity.BorrowRecord">
+        SELECT
+        tmur.record_id AS id,         <!-- 对应实体类id -->
+        tmur.material_id AS materialId,
+        tm.material_name AS materialName,
+        tm.category_id AS categoryId,
+        tmc.category_name AS category,  <!-- 对应实体类category字段，需与实体类属性名一致 -->
+        tm.is_expensive AS isPrecious,  <!-- 对应实体类isPrecious字段 -->
+        tmur.user_id AS userId,
+        tmur.borrow_time AS borrowTime,
+        tmur.return_time AS returnTime,
+        tmur.usage_project AS projectUsed
+        FROM tb_material_usage_record tmur
+        LEFT JOIN tb_material tm
+        ON tmur.material_id = tm.material_id
+        LEFT JOIN tb_material_category tmc
+        ON tm.category_id = tmc.category_id
+        WHERE tmur.user_id = #{userId}  <!-- 参数对应@Param("userId") -->
+        ORDER BY tmur.borrow_time DESC
+    </select>
+
+    <select id="selectUnreturnedByMaterialId" resultType="com.example.LendAndReturn.Lend.entity.BorrowRecord">
+        SELECT
+        tmur.record_id AS id,
+        tmur.material_id AS materialId,
+        tmur.user_id AS userId,
+        tmur.borrow_time AS borrowTime,
+        tmur.usage_project AS projectUsed
+        FROM tb_material_usage_record tmur
+        WHERE
+        tmur.material_id = #{materialId}  <!-- 参数对应@Param("materialId") -->
+        AND tmur.return_time IS NULL       <!-- 未归还状态判断 -->
+    </select>
+
+    <insert id="insertWithBorrowTime" parameterType="com.example.LendAndReturn.Lend.entity.BorrowRecord">
+        INSERT INTO tb_material_usage_record (
+        material_id,
+        user_id,
+        borrow_time,
+        usage_project
+        )
+        VALUES (
+        #{materialId},
+        #{userId},
+        NOW(),  <!-- 数据库自动填充当前时间（MySQL语法） -->
+        #{projectUsed}
+        )
+    </insert>
+</mapper>

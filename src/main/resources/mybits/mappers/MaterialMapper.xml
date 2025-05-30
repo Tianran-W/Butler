@@ -12,15 +12,14 @@
 
     <insert id="insertMaterial" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO materials (material_name, category_id, specifications, description)
-        VALUES (#{materialName}, #{categoryId}, CAST(#{specificationsJson} AS JSONB), #{description}) 
+        VALUES (#{materialName}, #{categoryId}, CAST(#{specificationsJson} AS JSONB), #{description})
         <!-- 注意: CAST(... AS JSONB) 是PostgreSQL特有的，如果字段是TEXT，则不需要CAST -->
         <!-- 如果 specificationsJson 为 null, 插入 NULL. 如果Postgresql JSONB字段不允许NULL，则需要处理 -->
     </insert>
 
     <select id="findById" resultMap="MaterialResultMap">
-        SELECT id, material_name, category_id, specifications, description 
-        FROM materials 
+        SELECT id, material_name, category_id, specifications, description
+        FROM materials
         WHERE id = #{id}
     </select>
-
 </mapper>

@@ -4,6 +4,7 @@ import com.example.LendAndReturn.Return.entity.ReturnRecord;
 import com.example.LendAndReturn.Return.mapper.ReturnRecordMapper;
 import com.example.LendAndReturn.Lend.entity.BorrowRecord;
 import com.example.LendAndReturn.Lend.mapper.BorrowRecordMapper;
+import com.example.inventory.material.entity.Material;
 import com.example.inventory.material.service.MaterialService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -111,7 +112,7 @@ public class ReturnRecordServiceImplTest {
         borrowRecord.setMaterialId(1L);
 
         Material material = new Material();
-        material.setId(1L);
+        material.setMaterial_id(1L);
         material.setStatus("借出");
         material.setQuantity(10);
 

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.BorrowMapper">
+
+    <!-- 插入物资使用记录 -->
+    <insert id="insertUsageRecord" parameterType="com.example.entity.BorrowRequest">
+        INSERT INTO tb_material_usage_record (
+            material_id,
+            user_id,
+            borrow_time,
+            return_time,
+            usage_project
+        )
+        VALUES (
+                   #{material_id},
+                   #{user_id},
+                   NOW(),
+                   NOW() + (SELECT usage_limit FROM tb_material WHERE material_id = #{material_id}) * INTERVAL '1 day',
+                   #{usage_project}
+               )
+    </insert>
+
+    <!-- 插入审批记录 -->
+    <insert id="insertApprovalRecord" parameterType="com.example.entity.BorrowRequest">
+        INSERT INTO tb_approval (material_id, user_id, approval_reason, approval_status, approval_time)
+        VALUES (
+                   #{material_id},
+                   #{user_id},
+                   #{approval_reason},
+                   '待审批',
+                   NULL
+               )
+    </insert>
+
+    <!-- 更新物资状态 -->
+    <update id="updateMaterialStatus">
+        UPDATE tb_material
+        SET status = #{status}
+        WHERE material_id = #{materialId}
+    </update>
+
+    <!-- 根据用户ID查询借用的物资信息 -->
+    <select id="findUserBorrowing" resultType="com.example.vo.MaterialVO">
+        SELECT
+            m.material_id AS materialId,
+            m.material_name AS materialName,
+            c.category_name AS categoryName,
+            m.is_expensive AS isExpensive,
+            m.sn_code AS snCode,
+            m.quantity AS quantity,
+            m.usage_limit AS usageLimit,
+            m.status AS status
+        FROM
+            tb_material m
+                JOIN (
+                -- 子查询：合并使用记录和待审批记录的 material_id
+                SELECT material_id FROM tb_material_usage_record WHERE user_id = #{userId}
+                UNION
+                SELECT material_id FROM tb_approval WHERE user_id = #{userId} AND approval_status = '待审批'
+            ) AS records ON m.material_id = records.material_id
+                LEFT JOIN tb_material_category c ON m.category_id = c.category_id
+    </select>
+
+</mapper>

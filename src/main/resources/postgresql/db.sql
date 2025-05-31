@@ -94,8 +94,8 @@ VALUES ('视觉'),
 
 -- 插入语句
 INSERT INTO tb_material (material_name, category_id, is_expensive, sn_code, quantity, usage_limit, status)
-VALUES ('工业相机', 1, 1, 'SN-CAM-001', 5, 15, '在库可借'),
-       ('伺服电机', 2, 1, 'SN-MOT-002', 3, NULL, '借出'),
+VALUES ('工业相机', 1, 1, 'SN-CAM-001', 5, 15, '已借出'),
+       ('伺服电机', 2, 1, 'SN-MOT-002', 3, NULL, '已借出'),
        ('电阻套件', 3, 0, 'SN-RES-003', 20, 21, '在库可借'),
        ('机械臂关节', 4, 1, 'SN-ARM-004', 2, Null, '送修');
 

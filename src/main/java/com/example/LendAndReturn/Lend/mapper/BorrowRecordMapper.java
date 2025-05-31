@@ -2,9 +2,11 @@ package com.example.LendAndReturn.Lend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.LendAndReturn.Lend.entity.BorrowRecord;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
+@Mapper
 public interface BorrowRecordMapper extends BaseMapper<BorrowRecord> {
     // 根据用户ID查询借用记录（含关联查询）
     List<BorrowRecord> selectByUserIdWithDetail(@Param("userId") Integer userId);

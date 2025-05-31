@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ApprovalRecordMapper">
+    <select id="getApprovalRecord" resultType="com.example.vo.ApprovalRecordVO">
+        SELECT
+            a.approval_id AS approvalId,  -- 新增字段映射
+            a.material_id AS materialId,
+            a.user_id AS userId,
+            a.approval_reason AS approvalReason,
+            a.approval_status AS approvalStatus,
+            u.username,
+            m.material_name AS materialName
+        FROM
+            tb_approval a
+                JOIN
+            tb_user u ON a.user_id = u.user_id
+                JOIN
+            tb_material m ON a.material_id = m.material_id
+                LEFT JOIN
+            tb_material_usage_record ur ON a.material_id = ur.material_id AND a.user_id = ur.user_id;
+    </select>
+</mapper>

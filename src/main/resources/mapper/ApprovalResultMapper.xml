@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ApprovalResultMapper">
+
+    <update id="updateApprovalStatus">
+        UPDATE tb_approval
+        SET approval_status = #{approval_status},
+            approval_time = #{approval_time}
+        WHERE approval_id = #{approval_id}
+    </update>
+
+    <update id="updateMaterialStatus">
+        UPDATE tb_material
+        SET status = #{status}
+        WHERE material_id = #{material_id}
+    </update>
+
+    <insert id="insertUsageRecord">
+        INSERT INTO tb_material_usage_record (material_id, user_id, borrow_time, return_time, usage_project)
+        VALUES (#{material_id}, #{user_id}, #{borrow_time}, #{return_time}, #{usage_project})
+    </insert>
+
+    <select id="getUsageLimit" resultType="java.lang.Integer">
+        SELECT usage_limit
+        FROM tb_material
+        WHERE material_id = #{material_id}
+    </select>
+
+</mapper>

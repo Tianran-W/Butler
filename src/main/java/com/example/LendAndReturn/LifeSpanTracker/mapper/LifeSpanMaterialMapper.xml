@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.LendAndReturn.LifeSpanTracker.mapper.LifeSpanMaterialMapper">
+    <select id="selectByKeyword" resultType="com.example.LendAndReturn.LifeSpanTracker.entity.LifeSpanMaterial">
+        SELECT
+            m.*,
+            u.user_id AS currentUserId,
+            u.username AS currentUserName,
+            r.usage_project AS currentProject,
+            r.borrow_time AS latestBorrowTime
+        FROM tb_material m
+                 LEFT JOIN (
+            SELECT
+                material_id,
+                user_id,
+                usage_project,
+                borrow_time
+            FROM tb_material_usage_record
+            WHERE return_time IS NULL
+              AND (material_id, borrow_time) IN (
+                SELECT
+                    material_id,
+                    MAX(borrow_time)
+                FROM tb_material_usage_record
+                WHERE return_time IS NULL
+                GROUP BY material_id
+            )
+        ) r ON m.material_id = r.material_id
+                 LEFT JOIN tb_user u ON r.user_id = u.user_id
+        WHERE m.material_name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+    <select id="getAll" resultType="com.example.LendAndReturn.LifeSpanTracker.entity.LifeSpanMaterial">
+            SELECT * FROM tb_material
+    </select>
+</mapper>

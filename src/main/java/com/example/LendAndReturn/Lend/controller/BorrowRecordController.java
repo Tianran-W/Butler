@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/borrow")
+@RequestMapping("/borrow")
 public class BorrowRecordController {
     private final BorrowRecordService borrowRecordService;
     private final MaterialService materialService;

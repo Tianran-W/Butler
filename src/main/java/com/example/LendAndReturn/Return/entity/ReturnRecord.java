@@ -31,10 +31,4 @@ public class ReturnRecord {
     // 归还照片URL（存储路径）
     @TableField("photo_url")
     private String photoUrl;
-
-    // 扩展字段，从借用记录关联获取物资名称等信息
-    @TableField(exist = false)
-    private String materialName;
-    @TableField(exist = false)
-    private LocalDateTime borrowTime;
 }

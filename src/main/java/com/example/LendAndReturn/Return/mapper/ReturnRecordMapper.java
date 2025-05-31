@@ -9,12 +9,4 @@ import java.util.List;
 
 @Mapper
 public interface ReturnRecordMapper extends BaseMapper<ReturnRecord> {
-    // 根据借用记录ID查询归还记录
-    List<ReturnRecord> selectByBorrowRecordId(@Param("borrowRecordId") Long borrowRecordId);
-
-    // 查询未归还记录（return_time为空）
-    List<ReturnRecord> selectUnreturnedRecords();
-
-    // 根据用户ID查询归还记录
-    List<ReturnRecord> selectByUserId(@Param("userId") Long userId);
 }

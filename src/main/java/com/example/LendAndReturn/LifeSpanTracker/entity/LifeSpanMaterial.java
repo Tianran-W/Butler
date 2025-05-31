@@ -7,13 +7,25 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("tb_material") // 假设数据库表名还是tb_material，可根据实际情况修改
+@TableName("tb_material")
 public class LifeSpanMaterial {
     @TableId(type = IdType.AUTO)
     private Long materialId;
     private String materialName;
     private String status;
-    // 使用人、使用项目
-    private String peopleUsed;
-    private String projectUsed;
+
+    // 新增字段：当前使用人ID和名称
+    @TableField(exist = false)
+    private Long currentUserId;
+
+    @TableField(exist = false)
+    private String currentUserName;
+
+    // 新增字段：当前使用项目
+    @TableField(exist = false)
+    private String currentProject;
+
+    // 新增字段：最新借用时间
+    @TableField(exist = false)
+    private java.time.LocalDateTime latestBorrowTime;
 }

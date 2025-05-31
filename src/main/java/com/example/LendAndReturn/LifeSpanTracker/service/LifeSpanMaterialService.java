@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface LifeSpanMaterialService extends IService<LifeSpanMaterial> {
     List<LifeSpanMaterial> getMaterialsByKeyword(String keyword);
+    List<LifeSpanMaterial> getAllTable();
 }

@@ -19,4 +19,9 @@ public class LifeSpanMaterialServiceImpl extends ServiceImpl<LifeSpanMaterialMap
     public List<LifeSpanMaterial> getMaterialsByKeyword(String keyword) {
         return lifeSpanMaterialMapper.selectByKeyword(keyword);
     }
+
+    @Override
+    public List<LifeSpanMaterial> getAllTable(){
+        return lifeSpanMaterialMapper.getAll();
+    }
 }

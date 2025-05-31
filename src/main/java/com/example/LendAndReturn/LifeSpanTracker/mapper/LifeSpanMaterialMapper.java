@@ -10,4 +10,5 @@ import java.util.List;
 @Mapper
 public interface LifeSpanMaterialMapper extends BaseMapper<LifeSpanMaterial> {
     List<LifeSpanMaterial> selectByKeyword(@Param("keyword") String keyword);
+    List<LifeSpanMaterial> getAll();
 }

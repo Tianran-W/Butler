@@ -29,11 +29,4 @@ public class BorrowRecord {
     private LocalDateTime approvalTime; // 审批时间
     private String projectUsed;    // 用于哪个项目
 
-    // 添加一些可能需要的业务方法，例如判断是否过期
-    public boolean isOverdue() {
-        if (dueDate == null) {
-            return false;
-        }
-        return LocalDateTime.now().isAfter(dueDate);
-    }
 }

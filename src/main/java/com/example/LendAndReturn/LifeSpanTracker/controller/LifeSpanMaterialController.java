@@ -22,4 +22,9 @@ public class LifeSpanMaterialController {
         List<LifeSpanMaterial> materials = lifeSpanMaterialService.getMaterialsByKeyword(keyword);
         return new ResponseEntity<>(materials, HttpStatus.OK);
     }
+    @GetMapping("/getAllTables")
+    public ResponseEntity<List<LifeSpanMaterial>> getAllTables(){
+        List<LifeSpanMaterial> materials = lifeSpanMaterialService.getAllTable();
+        return new ResponseEntity<>(materials, HttpStatus.OK);
+    }
 }

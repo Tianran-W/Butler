@@ -58,4 +58,8 @@ public class Material {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public int getIsExpensive() { return is_expensive; }
+
+    public Long getMaterialId() { return material_id; }
 }

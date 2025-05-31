@@ -9,9 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
-@RequestMapping("/api/materials") // 假设物资相关接口统一前缀
+@RequestMapping("/api/materials")
 public class MaterialController {
 
     @Autowired
@@ -28,4 +27,5 @@ public class MaterialController {
         Material material = materialService.getMaterialById(id);
         return ResponseEntity.ok(material);
     }
+
 }

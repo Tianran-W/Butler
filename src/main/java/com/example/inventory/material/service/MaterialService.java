@@ -7,6 +7,9 @@ import com.example.inventory.material.mapper.MaterialMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 @Service
 public class MaterialService {
     @Autowired
@@ -30,5 +33,9 @@ public class MaterialService {
             throw new ResourceNotFoundException("物资ID " + id + " 未找到");
         }
         return material;
+    }
+    // 添加通过关键字搜索可用物资的方法
+    public List<Material> getAvailableMaterialsByKeyword(String keyword) {
+        return materialMapper.selectAvailableMaterialsByKeyword(keyword);
     }
 }

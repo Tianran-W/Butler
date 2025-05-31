@@ -13,25 +13,25 @@
     </resultMap>
     <insert id="insertMaterial" useGeneratedKeys="true" keyProperty="id" keyColumn="material_id">
         INSERT INTO tb_material (
-            material_name, 
-            category_id, 
-            is_expensive, 
-            sn_code, 
-            quantity, 
-            usage_limit, 
+            material_name,
+            category_id,
+            is_expensive,
+            sn_code,
+            quantity,
+            usage_limit,
             status
         ) VALUES (
-            #{name},
-            #{categoryId},
-            #{isExpensive},
-            #{snCode},
-            #{quantity},
-            #{usageLimit},
-            #{status}
-        )
+                     #{name},
+                     #{categoryId},
+                     #{isExpensive},
+                     #{snCode},
+                     #{quantity},
+                     #{usageLimit},
+                     #{status}
+                 )
     </insert>
     <select id="findById" resultMap="MaterialResultMap">
-        SELECT 
+        SELECT
             material_id,
             material_name,
             category_id,
@@ -43,4 +43,31 @@
         FROM tb_material
         WHERE material_id = #{id}
     </select>
+    <select id="selectAvailableMaterialsByKeyword" resultMap="MaterialResultMap">
+        SELECT
+            material_id,
+            material_name,
+            category_id,
+            is_expensive,
+            sn_code,
+            quantity,
+            usage_limit,
+            status
+        FROM tb_material
+        WHERE material_name LIKE CONCAT('%', #{keyword}, '%')
+          AND status = '可用'
+    </select>
+    <!-- 更新物资借用状态 -->
+    <update id="updateById">
+        UPDATE tb_material
+        SET
+            material_name = #{name},
+            category_id = #{categoryId},
+            is_expensive = #{isExpensive},
+            sn_code = #{snCode},
+            quantity = #{quantity},
+            usage_limit = #{usageLimit},
+            status = #{status}
+        WHERE material_id = #{id}
+    </update>
 </mapper>

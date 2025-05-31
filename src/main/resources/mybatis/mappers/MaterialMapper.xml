@@ -2,16 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.inventory.material.mapper.MaterialMapper">
     <resultMap id="MaterialResultMap" type="com.example.inventory.material.entity.Material">
-        <id property="id" column="material_id"/>
-        <result property="name" column="material_name"/>
-        <result property="categoryId" column="category_id"/>
-        <result property="isExpensive" column="is_expensive"/>
-        <result property="snCode" column="sn_code"/>
+        <id property="material_id" column="material_id"/>
+        <result property="material_name" column="material_name"/>
+        <result property="category_id" column="category_id"/>
+        <result property="is_expensive" column="is_expensive"/>
+        <result property="sn_code" column="sn_code"/>
         <result property="quantity" column="quantity"/>
-        <result property="usageLimit" column="usage_limit"/>
+        <result property="usage_limit" column="usage_limit"/>
         <result property="status" column="status"/>
     </resultMap>
-    <insert id="insertMaterial" useGeneratedKeys="true" keyProperty="id" keyColumn="material_id">
+    <insert id="insertMaterial" useGeneratedKeys="true" keyProperty="material_id" keyColumn="material_id">
         INSERT INTO tb_material (
             material_name,
             category_id,
@@ -21,14 +21,14 @@
             usage_limit,
             status
         ) VALUES (
-                     #{name},
-                     #{categoryId},
-                     #{isExpensive},
-                     #{snCode},
-                     #{quantity},
-                     #{usageLimit},
-                     #{status}
-                 )
+            #{material_name},
+            #{category_id},
+            #{is_expensive},
+            #{sn_code},
+            #{quantity},
+            #{usage_limit},
+            #{status}
+        )
     </insert>
     <select id="findById" resultMap="MaterialResultMap">
         SELECT
@@ -61,13 +61,13 @@
     <update id="updateById">
         UPDATE tb_material
         SET
-            material_name = #{name},
-            category_id = #{categoryId},
-            is_expensive = #{isExpensive},
-            sn_code = #{snCode},
-            quantity = #{quantity},
-            usage_limit = #{usageLimit},
-            status = #{status}
-        WHERE material_id = #{id}
+        material_name = #{material_name},
+        category_id = #{category_id},
+        is_expensive = #{is_expensive},
+        sn_code = #{sn_code},
+        quantity = #{quantity},
+        usage_limit = #{usage_limit},
+        status = #{status}
+        WHERE material_id = #{material_id}
     </update>
 </mapper>

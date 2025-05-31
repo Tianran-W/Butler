@@ -33,7 +33,7 @@ CREATE TABLE tb_material
     is_expensive  SMALLINT              DEFAULT 0 CHECK (is_expensive IN (0, 1)),
     sn_code       VARCHAR(50),
     quantity      INTEGER      NOT NULL DEFAULT 0,
-    usage_limit   DATE,
+    usage_limit   INTEGER,
     status        VARCHAR(20)  NOT NULL
 );
 
@@ -94,10 +94,10 @@ VALUES ('视觉'),
 
 -- 插入语句
 INSERT INTO tb_material (material_name, category_id, is_expensive, sn_code, quantity, usage_limit, status)
-VALUES ('工业相机', 1, 1, 'SN-CAM-001', 5, '2026-12-31', '可用'),
+VALUES ('工业相机', 1, 1, 'SN-CAM-001', 5, 15, '在库可借'),
        ('伺服电机', 2, 1, 'SN-MOT-002', 3, NULL, '借出'),
-       ('电阻套件', 3, 0, 'SN-RES-003', 20, '2025-10-01', '可用'),
-       ('机械臂关节', 4, 1, 'SN-ARM-004', 2, NULL, '送修');
+       ('电阻套件', 3, 0, 'SN-RES-003', 20, 21, '在库可借'),
+       ('机械臂关节', 4, 1, 'SN-ARM-004', 2, Null, '送修');
 
 -- 插入语句
 INSERT INTO tb_material_usage_record (material_id, user_id, borrow_time, return_time, usage_project)

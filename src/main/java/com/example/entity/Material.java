@@ -17,6 +17,6 @@ public class Material {
     private Integer isExpensive;
     private String snCode;
     private Integer quantity;
-    private Date usageLimit;
+    private Integer usageLimit; // 天数
     private String status;
 }

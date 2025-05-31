@@ -12,6 +12,6 @@ public class MaterialVO {
     private Integer isExpensive;
     private String snCode;
     private Integer quantity;
-    private Date usageLimit;
+    private Integer usageLimit;
     private String status;
 }

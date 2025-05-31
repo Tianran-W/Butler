@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.dto.CategoryDTO;
 import com.example.entity.Category;
+import com.example.entity.Material;
 import com.example.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +29,11 @@ public class CategoryController {
         String categoryName = categoryDTO.getCategoryName();
         categoryService.addCategory(categoryName);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/addNewMaterials")
+    public ResponseEntity<Void> addNewMaterial(@RequestBody Material material) {
+        categoryService.addNewMaterial(material);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

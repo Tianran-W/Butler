@@ -15,4 +15,26 @@
         ON CONFLICT (category_name) DO NOTHING
     </insert>
 
+    <!-- 新增的物资插入 -->
+    <insert id="insertMaterial" parameterType="com.example.entity.Material">
+        INSERT INTO tb_material (
+            material_name,
+            category_id,
+            is_expensive,
+            sn_code,
+            quantity,
+            usage_limit,
+            status
+        )
+        VALUES (
+                   #{materialName},
+                   #{categoryId},
+                   #{isExpensive},
+                   #{snCode},
+                   #{quantity},
+                   #{usageLimit},
+                   #{status}
+               )
+    </insert>
+
 </mapper>

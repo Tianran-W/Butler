@@ -18,6 +18,7 @@ public class ApprovalRecordController {
     @Resource
     private ApprovalRecordService approvalRecordService;
 
+    // 获取等待审批的记录
     @GetMapping("/getApprovalRecord")
     public ResponseEntity<List<ApprovalRecordVO>> getApprovalRecord() {
         List<ApprovalRecordVO> approvalRecordVOs = approvalRecordService.getApprovalRecord();

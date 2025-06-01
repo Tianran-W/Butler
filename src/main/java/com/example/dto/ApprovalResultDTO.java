@@ -14,6 +14,6 @@ public class ApprovalResultDTO {
     private Integer user_id;
     @NotNull(message = "审批结果不能为空")
     private Boolean approval_result;
-    @NotNull(message = "审批原因不能为空")
-    private String approval_reason; // 新增字段
+
+    private String approval_reason;
 }

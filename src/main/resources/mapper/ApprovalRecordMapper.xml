@@ -1,22 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.ApprovalRecordMapper">
-    <select id="getApprovalRecord" resultType="com.example.vo.ApprovalRecordVO">
-        SELECT
-            a.approval_id AS approvalId,  -- 新增字段映射
-            a.material_id AS materialId,
-            a.user_id AS userId,
-            a.approval_reason AS approvalReason,
-            a.approval_status AS approvalStatus,
-            u.username,
-            m.material_name AS materialName
-        FROM
-            tb_approval a
-                JOIN
-            tb_user u ON a.user_id = u.user_id
-                JOIN
-            tb_material m ON a.material_id = m.material_id
-                LEFT JOIN
-            tb_material_usage_record ur ON a.material_id = ur.material_id AND a.user_id = ur.user_id;
-    </select>
+<!--    <select id="getApprovalRecord" resultType="com.example.vo.ApprovalRecordVO">-->
+<!--        SELECT-->
+<!--            a.approval_id AS approvalId,  &#45;&#45; 新增字段映射-->
+<!--            a.material_id AS materialId,-->
+<!--            a.user_id AS userId,-->
+<!--            a.approval_reason AS approvalReason,-->
+<!--            a.approval_status AS approvalStatus,-->
+<!--            u.username,-->
+<!--            m.material_name AS materialName-->
+<!--        FROM-->
+<!--            tb_approval a-->
+<!--                JOIN-->
+<!--            tb_user u ON a.user_id = u.user_id-->
+<!--                JOIN-->
+<!--            tb_material m ON a.material_id = m.material_id-->
+<!--                LEFT JOIN-->
+<!--            tb_material_usage_record ur ON a.material_id = ur.material_id AND a.user_id = ur.user_id;-->
+<!--    </select>-->
+        <select id="getApprovalRecord" resultType="com.example.vo.ApprovalRecordVO">
+            SELECT
+                a.approval_id AS approvalId,
+                a.material_id AS materialId,
+                a.user_id AS userId,
+                a.approval_reason AS approvalReason,
+                a.approval_status AS approvalStatus,
+                u.username,
+                m.material_name AS materialName,
+                ur.borrow_time AS borrowTime
+            FROM
+                tb_approval a
+                    JOIN tb_user u ON a.user_id = u.user_id
+                    JOIN tb_material m ON a.material_id = m.material_id
+                    LEFT JOIN (
+                    -- 子查询：获取每个组合的最新 borrow_time
+                    SELECT
+                        material_id,
+                        user_id,
+                        MAX(borrow_time) AS borrow_time  -- 取最大（最新）的 borrow_time
+                    FROM
+                        tb_material_usage_record
+                    GROUP BY
+                        material_id, user_id  -- 按组合分组
+                ) AS latest_ur ON a.material_id = latest_ur.material_id AND a.user_id = latest_ur.user_id
+                    LEFT JOIN tb_material_usage_record ur
+                              ON latest_ur.material_id = ur.material_id
+                                  AND latest_ur.user_id = ur.user_id
+                                  AND latest_ur.borrow_time = ur.borrow_time  -- 关联最新的记录
+            WHERE
+                a.approval_status = '待审批';
+        </select>
 </mapper>

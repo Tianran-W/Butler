@@ -19,6 +19,7 @@ public class ReturnController {
     @Resource
     private ReturnService returnService;
 
+    // 提交归还
     @PostMapping("/return")
     public ResponseEntity<Void> returnMaterial(@Valid @RequestBody ReturnDTO returnDTO) {
         returnService.returnMaterial(returnDTO);

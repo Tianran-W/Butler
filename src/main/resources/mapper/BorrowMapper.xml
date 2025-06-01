@@ -53,12 +53,21 @@
         FROM
             tb_material m
                 JOIN (
-                -- 子查询：合并使用记录和待审批记录的 material_id
-                SELECT material_id FROM tb_material_usage_record WHERE user_id = #{userId}
+                -- 子查询：合并"已借出"的使用记录和待审批记录的 material_id
+                SELECT mur.material_id
+                FROM tb_material_usage_record mur
+                         JOIN tb_material mat ON mur.material_id = mat.material_id
+                WHERE mur.user_id = #{userId}
+                  AND mat.status = '已借出'  -- 筛选物资状态为"已借出"的记录
+
                 UNION
-                SELECT material_id FROM tb_approval WHERE user_id = #{userId} AND approval_status = '待审批'
+
+                SELECT material_id
+                FROM tb_approval
+                WHERE user_id = #{userId}
+                  AND approval_status = '待审批'
             ) AS records ON m.material_id = records.material_id
-                LEFT JOIN tb_material_category c ON m.category_id = c.category_id
+                LEFT JOIN tb_material_category c ON m.category_id = c.category_id;
     </select>
 
 </mapper>

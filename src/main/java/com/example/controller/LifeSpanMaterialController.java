@@ -17,6 +17,7 @@ public class LifeSpanMaterialController {
     @Resource
     private LifeSpanMaterialService lifeSpanMaterialService;
 
+    // 获取所有的物资
     @GetMapping("/getAllMaterial")
     public List<MaterialVO> getAllMaterial() {
         return lifeSpanMaterialService.getAllMaterials();

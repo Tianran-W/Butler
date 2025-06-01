@@ -20,6 +20,7 @@ public class BorrowController {
     @Resource
     private BorrowService borrowService;
 
+    // 新建借用记录
     @PostMapping("/addNewBorrow")
     public ResponseEntity<Void> addNewBorrow(@Valid @RequestBody BorrowDTO borrowDTO) {
         // 将DTO转换为业务实体
@@ -34,6 +35,7 @@ public class BorrowController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    //通过用户Id搜索相关的借用
     @PostMapping("/findBorrowingByUserId")
     public ResponseEntity<List<MaterialVO>> findUserBorrowing(
             @Valid @RequestBody UserBorrowingQueryDTO queryDTO) {

@@ -19,6 +19,7 @@ public class ApprovalResultController {
     @Resource
     private ApprovalResultService approvalResultService;
 
+    // 审批操作
     @PostMapping("/ApprovalResult")
     public ResponseEntity<Void> handleApprovalResult(@Valid @RequestBody ApprovalResultDTO dto) {
         approvalResultService.handleApprovalResult(dto);

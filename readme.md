@@ -1,184 +1,138 @@
+# 物资管理系统后端项目
 
-# 系统模块设计文档
+## 一、项目概述
+本项目是一个物资管理系统的后端服务，基于Spring Boot和MyBatis-Plus构建，使用PostgreSQL作为数据库。系统提供了物资借用、归还、审批、分类管理等功能，适用于企业或组织内部的物资管理场景。
 
-## 一、基础功能模块（物资新建）
+## 二、功能模块
+1. **物资分类管理**：包括获取物资分布、新建物资类别和物资入库操作。
+2. **物资借用管理**：支持新建借用记录、通过用户ID搜索相关借用信息。
+3. **物资归还管理**：提供物资归还功能，更新相关记录和物资状态。
+4. **审批管理**：处理物资借用的审批操作，更新审批状态和物资状态，并插入使用记录。
+5. **物资信息获取**：获取所有物资信息。
 
-### 物资信息录入界面类
-**用途**：前端提交新建物资的表单数据  
-**JSON字段**：
-```json
-{
-  "materialName": "物资名称（字符串，必填）",
-  "categoryId": "分类ID（数值）",
-  "specifications": {
-    "品牌": "Dell",  /* 动态键值对，根据分类属性扩展 */
-    "内存": "16GB"
-  },
-  "description": "描述文本（可选）"
-}
+## 三、技术栈
+1. **后端框架**：Spring Boot
+2. **数据库**：PostgreSQL
+3. **ORM框架**：MyBatis-Plus
+4. **其他**：Lombok、Jackson
+
+## 四、项目结构
+```
+src
+├── main
+│   ├── java
+│   │   └── com
+│   │       └── example
+│   │           ├── controller：控制器层，处理HTTP请求
+│   │           ├── dto：数据传输对象，用于前后端数据交互
+│   │           ├── entity：实体类，对应数据库表结构
+│   │           ├── ExceptionHandler：全局异常处理
+│   │           ├── mapper：数据访问层，与数据库交互
+│   │           ├── service：服务层，处理业务逻辑
+│   │           │   └── impl：服务层实现类
+│   │           ├── vo：视图对象，用于封装返回给前端的数据
+│   │           └── ERPApplication.java：项目启动类
+│   └── resources
+│       ├── mapper：MyBatis XML映射文件
+│       ├── postgresql：PostgreSQL数据库脚本
+│       └── application.properties：项目配置文件
+└── test
+    └── java
+        └── com
+            └── example：测试类
 ```
 
-### 分类树形接口返回类
-**用途**：展示层级分类结构供前端选择  
-**JSON字段**：
-```json
-{
-  "id": 1024,
-  "name": "电子设备",
-  "children": [
-    {
-      "id": 2048,
-      "name": "笔记本电脑",
-      "children": []  /* 嵌套结构实现多级树形 */
-    }
-  ]
-}
+## 五、环境搭建
+### 1. 安装Java和Maven
+Java 17
+Maven 使用IDEA内嵌的maven
+
+### 2. 安装PostgreSQL
+下载并安装PostgreSQL数据库，创建名为`erp_db`的数据库，并设置用户名和密码。
+
+### 3. 配置数据库连接
+在`src/main/resources/application.properties`文件中，配置数据库连接信息：
+```properties
+spring.datasource.url=jdbc:postgresql://localhost:5432/erp_db
+spring.datasource.username=postgres
+spring.datasource.password=123456
+spring.datasource.driver-class-name=org.postgresql.Driver
 ```
 
-### 表单验证结果类
-**用途**：返回前端表单校验错误信息  
-**JSON字段**：
-```json
-{
-  "isValid": false,
-  "errors": [
-    {
-      "field": "materialName",
-      "message": "物资名称不能为空"
-    },
-    {
-      "field": "specifications.品牌",
-      "message": "品牌必须填写"
-    }
-  ]
-}
+### 4. 初始化数据库
+执行`src/main/resources/postgresql/db.sql`脚本，创建数据库表并插入初始数据。
+
+## 六、项目启动
+### 1. 克隆项目
+```bash
+git clone https://github.com/Tianran-W/Butler.git
+cd demo
 ```
 
-### 操作日志记录类
-**用途**：展示物资操作历史记录  
-**JSON字段**：
-```json
-{
-  "materialId": 123,
-  "operator": "admin",
-  "action": "CREATE",
-  "operateTime": "2025-05-23 14:30:00"
-}
+### 2. 编译项目
+```bash
+mvn clean
+mvn build
 ```
 
----
-
-## 二、飞书审批模块
-
-### 审批详情弹窗数据类
-**用途**：显示审批单中的申请人及物资清单  
-**JSON字段**：
-```json
-{
-  "applicant": "张三",
-  "applyTime": "2025-05-20 10:00:00",
-  "materials": [
-    {
-      "id": 123,
-      "name": "MacBook Pro",
-      "quantity": 2
-    }
-  ]
-}
+### 3. 启动项目
+```bash
+mvn spring-boot:run
 ```
 
-### 飞书消息推送请求类
-**用途**：向飞书发送审批通知的消息内容  
-**JSON字段**：
-```json
-{
-  "approvalId": "AP-20250520001",
-  "messageType": "CARD",
-  "content": {
-    "title": "物资借用审批通知",
-    "body": "申请人：张三\n申请物资：MacBook Pro x2"
-  }
-}
-```
+项目启动后，会监听`8080`端口。
 
-### 审批状态同步类
-**用途**：存储审批状态与飞书消息的关联关系  
-**JSON字段（数据库存储）**：
-```json
-{
-  "approvalId": "AP-20250520001",
-  "feishuMessageId": "msg_abcd1234",
-  "status": "APPROVED"
-}
-```
+## 七、接口文档
+### 1. 物资分类管理接口
+- **获取物资分布**
+    - **URL**：`/api/admin/materialsCategories`
+    - **方法**：`GET`
+    - **返回**：物资分类列表
 
----
+- **新建物资类别**
+    - **URL**：`/api/admin/materialsNewCategories`
+    - **方法**：`POST`
+    - **请求体**：`CategoryDTO`
+    - **返回**：无
 
-## 三、分类管理模块
+- **物资入库**
+    - **URL**：`/api/admin/addNewMaterials`
+    - **方法**：`POST`
+    - **请求体**：`Material`
+    - **返回**：无
 
-### 分类树形节点类
-**用途**：可视化编辑器的节点渲染  
-**JSON字段**：
-```json
-{
-  "id": 1024,
-  "label": "办公设备",
-  "children": [
-    {
-      "id": 2048,
-      "label": "电脑",
-      "children": []  /* 支持无限层级嵌套 */
-    }
-  ]
-}
-```
+### 2. 物资借用管理接口
+- **新建借用记录**
+    - **URL**：`/api/addNewBorrow`
+    - **方法**：`POST`
+    - **请求体**：`BorrowDTO`
+    - **返回**：无
 
-### 节点拖拽请求类
-**用途**：接收前端拖拽后的节点位置变化  
-**JSON字段**：
-```json
-{
-  "draggedNodeId": 2048,
-  "targetParentId": 1024,  /* 拖拽后的父节点ID */
-  "newIndex": 0  /* 在父节点中的排序位置 */
-}
-```
+- **通过用户ID搜索相关借用**
+    - **URL**：`/api/findBorrowingByUserId`
+    - **方法**：`POST`
+    - **请求体**：`UserBorrowingQueryDTO`
+    - **返回**：物资信息列表
 
-### 分类属性扩展配置类
-**用途**：定义分类可添加的自定义字段规则  
-**JSON字段**：
-```json
-{
-  "categoryId": 1024,
-  "attributeName": "保修期限",
-  "dataType": "DATE",
-  "required": true
-}
-```
+### 3. 物资归还管理接口
+- **提交归还**
+    - **URL**：`/api/return`
+    - **方法**：`POST`
+    - **请求体**：`ReturnDTO`
+    - **返回**：无
 
-### 删除校验结果类
-**用途**：返回分类是否允许删除及关联物资列表  
-**JSON字段**：
-```json
-{
-  "canDelete": false,
-  "blockReason": "存在关联物资",
-  "relatedMaterials": ["电脑-001", "打印机-003"]
-}
-```
+### 4. 审批管理接口
+- **审批操作**
+    - **URL**：`/api/admin/ApprovalResult`
+    - **方法**：`POST`
+    - **请求体**：`ApprovalResultDTO`
+    - **返回**：无
 
----
+### 5. 物资信息获取接口
+- **获取所有物资**
+    - **URL**：`/api/getAllMaterial`
+    - **方法**：`GET`
+    - **返回**：物资信息列表
 
-## 关键设计原则
-
-- **动态扩展性**  
-  物资规格（`specifications`）、分类属性（`attributeName`）使用键值对结构，支持动态字段
-
-- **树形结构通用性**  
-  分类树（`children`嵌套）与审批物资清单（`materials`数组）均采用标准化的层级数据格式
-
-- **状态一致性**  
-  审批模块中 `approvalId` 与 `feishuMessageId` 双向绑定，确保状态同步
-
-- **错误明确性**  
-  表单验证返回具体错误字段及提示，便于前端定位问题
+## 八、异常处理
+项目中使用了全局异常处理，当出现`DuplicateKeyException`时，会返回统一的错误响应，包含状态码、错误码和错误信息。

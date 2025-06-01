@@ -42,7 +42,7 @@ src
             └── example：测试类
 ```
 
-## 五、环境搭建
+## 五、后端服务端环境搭建
 ### 1. 安装Java和Maven
 Java 17
 Maven 使用IDEA内嵌的maven
@@ -66,7 +66,6 @@ spring.datasource.driver-class-name=org.postgresql.Driver
 ### 1. 克隆项目
 ```bash
 git clone https://github.com/Tianran-W/Butler.git
-cd demo
 ```
 
 ### 2. 编译项目
@@ -134,5 +133,3 @@ mvn spring-boot:run
     - **方法**：`GET`
     - **返回**：物资信息列表
 
-## 八、异常处理
-项目中使用了全局异常处理，当出现`DuplicateKeyException`时，会返回统一的错误响应，包含状态码、错误码和错误信息。

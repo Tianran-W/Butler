@@ -252,26 +252,22 @@ CREATE TABLE tb_image (
         }
         ```
 ### 借还照片管理接口
-*   **上传借还照片**
+*   **上传借还照片并直接关联记录**
     *   URL：`/api/uploadImage`
     *   方法：`POST`
-    *   请求体：`MultipartFile`
+    *   请求体 ：
+        ```json
+        {
+            "file": "<MultipartFile>", 
+            "recordType": "string",    // 'borrow', 'return', 'scrap'
+            "recordId": "integer"
+        }
+        ```
     *   返回：
         ```json
         {
             "imageId": 101,
-            "imagePath": "/uploads/20230601/abc.jpg"
-        }
-        ```
-*   **关联照片到记录**
-    *   URL：`/api/linkImageToRecord`
-    *   方法：`POST`
-    *   请求体：
-        ```json
-        {
-            "imageId": 101,
-            "recordType": "borrow",
-            "recordId": 1001
+            "imagePath": "/uploads/borrow/20230601/abc.jpg" 
         }
         ```
 

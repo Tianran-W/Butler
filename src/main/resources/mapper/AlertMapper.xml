@@ -16,6 +16,7 @@
     </resultMap>
 
     <select id="findMaterialAlerts" resultMap="MaterialAlertResultMap">
+        <![CDATA[
         SELECT
             material_id,
             material_name,
@@ -25,6 +26,7 @@
             tb_material
         WHERE
             quantity < 5
+    ]]>
     </select>
 
     <select id="findReturnReminders" resultMap="ReturnReminderResultMap">

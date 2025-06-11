@@ -21,6 +21,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // 其他异常处理...
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<Map<String, String>> handleAuthException(AuthException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(Map.of("error", ex.getMessage()));
+    }
 }
 

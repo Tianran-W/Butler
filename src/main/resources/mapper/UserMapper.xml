@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.UserMapper">
+    <resultMap id="UserWithRoleResultMap" type="com.example.entity.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="roleId" column="role_id"/>
+        <result property="department" column="department"/>
+        <result property="roleName" column="role_name"/>
+    </resultMap>
+
+    <select id="findByUsername" resultMap="UserWithRoleResultMap">
+        SELECT
+            u.user_id,
+            u.username,
+            u.password,
+            u.role_id,
+            u.department,
+            r.role_name
+        FROM
+            tb_user u
+        LEFT JOIN
+            tb_role r ON u.role_id = r.role_id
+        WHERE
+            u.username = #{username}
+    </select>
+
+    <update id="updatePassword">
+        UPDATE tb_user
+        SET password = #{newPassword}
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>

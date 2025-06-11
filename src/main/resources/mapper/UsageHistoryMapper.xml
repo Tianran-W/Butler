@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.UsageHistoryMapper">
+    <select id="getUsageHistory" resultType="java.util.Map">
+        SELECT
+            mur.material_id,
+            m.material_name,
+            mur.user_id,
+            u.username,
+            mur.borrow_time,
+            mur.return_time,
+            mur.usage_project
+        FROM
+            tb_material_usage_record mur
+        JOIN
+            tb_material m ON mur.material_id = m.material_id
+        JOIN
+            tb_user u ON mur.user_id = u.user_id
+        ORDER BY
+            mur.borrow_time DESC
+    </select>
+</mapper>

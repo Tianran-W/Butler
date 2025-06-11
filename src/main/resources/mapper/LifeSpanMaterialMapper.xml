@@ -17,4 +17,20 @@
             tb_material_category c ON m.category_id = c.category_id
     </select>
 
+    <select id="findBySnCode" resultType="com.example.vo.MaterialVO">
+        SELECT
+            m.material_id AS materialId,
+            m.material_name AS materialName,
+            c.category_name AS categoryName,
+            m.is_expensive AS isExpensive,
+            m.sn_code AS snCode,
+            m.quantity AS quantity,
+            m.usage_limit AS usageLimit,
+            m.status AS status
+        FROM
+            tb_material m
+                LEFT JOIN
+            tb_material_category c ON m.category_id = c.category_id
+        WHERE m.sn_code = #{snCode}
+    </select>
 </mapper>

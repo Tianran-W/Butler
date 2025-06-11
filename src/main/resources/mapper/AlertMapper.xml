@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AlertMapper">
+    <resultMap id="MaterialAlertResultMap" type="com.example.vo.MaterialAlertVO">
+        <result property="materialId" column="material_id"/>
+        <result property="materialName" column="material_name"/>
+        <result property="currentQuantity" column="quantity"/>
+        <result property="alertThreshold" column="alert_threshold"/>
+    </resultMap>
+
+    <resultMap id="ReturnReminderResultMap" type="com.example.vo.ReturnReminderVO">
+        <result property="materialId" column="material_id"/>
+        <result property="materialName" column="material_name"/>
+        <result property="borrower" column="username"/>
+        <result property="dueDate" column="return_time"/>
+    </resultMap>
+
+    <select id="findMaterialAlerts" resultMap="MaterialAlertResultMap">
+        SELECT
+            material_id,
+            material_name,
+            quantity AS currentQuantity,
+            5 AS alertThreshold
+        FROM
+            tb_material
+        WHERE
+            quantity < 5
+    </select>
+
+    <select id="findReturnReminders" resultMap="ReturnReminderResultMap">
+        SELECT
+            mur.material_id,
+            m.material_name,
+            u.username,
+            mur.return_time
+        FROM
+            tb_material_usage_record mur
+                JOIN tb_material m ON mur.material_id = m.material_id
+                JOIN tb_user u ON mur.user_id = u.user_id
+        WHERE
+            m.status = '已借出' AND mur.return_time IS NOT NULL AND mur.return_time BETWEEN NOW() AND NOW() + INTERVAL '3 day'
+    </select>
+</mapper>

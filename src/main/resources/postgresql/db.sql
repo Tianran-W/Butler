@@ -77,6 +77,14 @@ CREATE TABLE tb_reimbursement_relation
     reimbursement_id VARCHAR(50) NOT NULL
 );
 
+CREATE TABLE tb_image (
+    image_id SERIAL PRIMARY KEY,
+    record_type VARCHAR(20) NOT NULL CHECK (record_type IN ('borrow', 'return', 'scrap')),
+    record_id INTEGER NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    upload_time TIMESTAMP DEFAULT NOW()
+);
+
 -- 生成用户名单
 INSERT INTO tb_user (username, password, department)
 VALUES ('张三', 'e10adc3949ba59abbe56e057f20f883e', '机械组'), -- 密码123456的MD5

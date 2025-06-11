@@ -133,4 +133,181 @@ mvn spring-boot:run
     - **方法**：`GET`
     - **返回**：物资信息列表
 
-2025/6/10提交：第一轮迭代分支commit重命名：这是第一轮迭代的分支的最后一次提交（封）
+---
+# 第二轮迭代
+## 一、新增功能模块
+*   **用户权限管理**
+    *   基于现有`tb_role`和`tb_user`表实现角色权限控制
+    *   新增JWT认证机制
+*   **大模型物资推荐**
+    *   基于历史使用记录和大模型分析生成物资推荐方案
+*   **物资预警系统**
+    *   实现库存预警和归还提醒功能
+*   **物资报废报销流程**
+    *   新增物资报废和报销流程管理
+*   **借还照片管理**
+    *   新增借出/归还照片上传功能
+*   **电池状态登记**
+    *   新增电池状态记录功能
+*   **SN码管理**
+    *   完善SN码录入和查询功能
+
+## 二、数据库图片表设计
+```sql
+CREATE TABLE tb_image (
+    image_id SERIAL PRIMARY KEY,
+    record_type VARCHAR(20) NOT NULL CHECK (record_type IN ('borrow', 'return', 'scrap')),
+    record_id INTEGER NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    upload_time TIMESTAMP DEFAULT NOW()
+);
+```
+## 二、接口迭代设计
+### 用户权限管理接口
+*   **用户登录**
+    *   URL：`/api/login`
+    *   方法：`POST`
+    *   请求体：
+        ```json
+        {
+            "username": "string",
+            "password": "string"
+        }
+        ```
+    *   返回：JWT Token
+*   **获取用户角色**
+    *   URL：`/api/user/role`
+    *   方法：`GET`
+    *   请求头：`Authorization: Bearer <token>`
+    *   返回：
+        ```json
+        {
+            "role": "admin/user"
+        }
+        ```
+### 大模型物资推荐接口
+*   **获取推荐物资列表**
+    *   URL：`/api/recommendMaterials`
+    *   方法：`POST`
+    *   请求体：
+        ```json
+        {
+            "projectType": "机器人竞赛",
+            "participantCount": 10
+        }
+        ```
+    *   返回：
+        ```json
+        [{
+            "materialId": 1,
+            "materialName": "工业相机",
+            "recommendReason": "历史同类项目使用率90%",
+            "avgUsage": 2.5
+        }]
+        ```
+### 物资预警接口
+*   **库存预警列表**
+    *   URL：`/api/admin/materialAlerts`
+    *   方法：`GET`
+    *   返回：
+        ```json
+        [{
+            "materialId": 3,
+            "materialName": "步进电机",
+            "currentQuantity": 2,
+            "alertThreshold": 5
+        }]
+        ```
+*   **归还提醒**
+    *   URL：`/api/returnReminders`
+    *   方法：`GET`
+    *   返回：
+        ```json
+        [{
+            "materialId": 1,
+            "materialName": "工业相机",
+            "borrower": "张三",
+            "dueDate": "2025-06-15"
+        }]
+        ```
+### 物资报废报销接口
+*   **提交报废申请**
+    *   URL：`/api/material/scrap`
+    *   方法：`POST`
+    *   请求体：
+        ```json
+        {
+            "materialId": 5,
+            "reason": "电池膨胀无法使用",
+        }
+        ```
+*   **关联报销信息**
+    *   URL：`/api/reimbursement/link`
+    *   方法：`POST`
+    *   请求体：
+        ```json
+        {
+            "materialId": 5,
+            "reimbursementId": "BX202306001"
+        }
+        ```
+### 借还照片管理接口
+*   **上传借还照片**
+    *   URL：`/api/uploadImage`
+    *   方法：`POST`
+    *   请求体：`MultipartFile`
+    *   返回：
+        ```json
+        {
+            "imageId": 101,
+            "imagePath": "/uploads/20230601/abc.jpg"
+        }
+        ```
+*   **关联照片到记录**
+    *   URL：`/api/linkImageToRecord`
+    *   方法：`POST`
+    *   请求体：
+        ```json
+        {
+            "imageId": 101,
+            "recordType": "borrow",
+            "recordId": 1001
+        }
+        ```
+
+### 电池状态接口
+*   **提交电池状态**
+    *   URL：`/api/batteryStatus`
+    *   方法：`POST`
+    *   请求体：
+        ```json
+        {
+            "materialId": 8,
+            "batteryLevel": 80,
+            "batteryHealth": "良好"
+        }
+        ```
+*   **查询电池历史状态**
+    *   URL：`/api/batteryHistory/{materialId}`
+    *   方法：`GET`
+    *   返回：
+        ```json
+        [{
+            "recordTime": "2023-05-01 10:30",
+            "batteryLevel": 85,
+            "batteryHealth": "良好"
+        }]
+        ```
+### SN码管理接口
+*   **SN码查询**
+    *   URL：`/api/material/sn/{snCode}`
+    *   方法：`GET`
+    *   返回：物资详情（含SN码）
+
+### 权限测试矩阵
+| 用户角色       | 管理员接口 | 普通用户接口 |
+| :------------- | :--------- | :----------- |
+| 管理员         | ✓          | ✓            |
+| 普通用户       | ✗          | ✓            |
+| 未认证用户     | ✗          | ✗            |
+

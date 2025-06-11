@@ -138,9 +138,9 @@ mvn spring-boot:run
 ## 一、新增功能模块
 *   **用户权限管理**
     *   基于现有`tb_role`和`tb_user`表实现角色权限控制
-    *   新增JWT认证机制
+    *   BCrypt存储密码
 *   **大模型物资推荐**
-    *   基于历史使用记录和大模型分析生成物资推荐方案
+    *   基于历史使用记录和大模型分析生成物资推荐方案（使用OKHTTP向 OPENAI 发送请求）
 *   **物资预警系统**
     *   实现库存预警和归还提醒功能
 *   **物资报废报销流程**
@@ -163,6 +163,7 @@ CREATE TABLE tb_image (
 );
 ```
 ## 二、接口迭代设计
+
 ### 用户权限管理接口
 *   **用户登录**
     *   URL：`/api/login`
@@ -174,15 +175,82 @@ CREATE TABLE tb_image (
             "password": "string"
         }
         ```
-    *   返回：JWT Token
-*   **获取用户角色**
-    *   URL：`/api/user/role`
-    *   方法：`GET`
-    *   请求头：`Authorization: Bearer <token>`
     *   返回：
         ```json
         {
-            "role": "admin/user"
+            "message": "登录成功",
+            "userId": 1,
+            "username": "张三",
+            "role": "admin" // 或 "user"
+        }
+        ```
+        *   失败时，HTTP状态码 `401 Unauthorized`。
+        *   响应体：
+        ```json
+        {
+            "error": "用户名或密码无效"
+        }
+        ```
+    *   **备注**：登录成功后，客户端（如浏览器）会自动在后续请求中携带Session Cookie。
+
+*   **获取用户角色**
+    *   URL：`/api/user/role`
+    *   方法：`GET`
+    *   **请求头**：无特定认证请求头 (Session Cookie 会自动由客户端发送)
+    *   返回：
+        *   成功时，HTTP状态码 `200 OK`。
+        *   响应体：
+        ```json
+        {
+            "role": "admin" // 或 "user"
+        }
+        ```
+        *   如果用户未登录（Session无效或不存在），返回 HTTP状态码 `401 Unauthorized`。
+
+*   **用户登出**
+    *   URL：`/api/logout`
+    *   方法：`POST`
+    *   **请求头**：无特定认证请求头 (Session Cookie 会自动由客户端发送)
+    *   请求体：无
+    *   返回：
+        *   成功时，HTTP状态码 `200 OK`。服务器将销毁当前用户的Session。
+        *   响应体示例：
+        ```json
+        {
+            "message": "登出成功"
+        }
+        ```
+
+*   **修改密码**
+    *   URL：`/api/user/password`
+    *   方法：`PUT` (或 `POST`)
+    *   **请求头**：无特定认证请求头
+    *   请求体：
+        ```json
+        {
+            "currentPassword": "string", // 当前密码
+            "newPassword": "string"      // 新密码
+        }
+        ```
+    *   返回：
+        *   成功时，HTTP状态码 `200 OK`。
+        *   响应体示例：
+        ```json
+        {
+            "message": "密码修改成功"
+        }
+        ```
+        *   失败时（例如，当前密码错误，用户未登录等），HTTP状态码 `400 Bad Request` 或 `401 Unauthorized`。
+        *   响应体示例 (当前密码错误)：
+        ```json
+        {
+            "error": "当前密码不正确"
+        }
+        ```
+        *   响应体示例 (未登录)：
+        ```json
+        {
+            "error": "用户未登录或会话已过期"
         }
         ```
 ### 大模型物资推荐接口

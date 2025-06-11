@@ -87,11 +87,11 @@ CREATE TABLE tb_image (
 
 -- 生成用户名单
 INSERT INTO tb_user (username, password, department)
-VALUES ('张三', 'e10adc3949ba59abbe56e057f20f883e', '机械组'), -- 密码123456的MD5
-       ('李四', 'e10adc3949ba59abbe56e057f20f883e', '视觉组'),
-       ('王五', 'e10adc3949ba59abbe56e057f20f883e', '后勤组'),
-       ('赵六', 'e10adc3949ba59abbe56e057f20f883e', '雷达组'),
-       ('孙七', 'e10adc3949ba59abbe56e057f20f883e', '视觉组');
+VALUES ('张三', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '机械组'), -- 密码123456的BCrypt
+       ('李四', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '视觉组'),
+       ('王五', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '后勤组'),
+       ('赵六', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '雷达组'),
+       ('孙七', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '视觉组');
 
 -- 插入分类：视觉、电控、硬件、机械
 INSERT INTO tb_material_category (category_name)

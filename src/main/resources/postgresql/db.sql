@@ -87,11 +87,11 @@ CREATE TABLE tb_image (
 
 -- 生成用户名单
 INSERT INTO tb_user (username, password, department)
-VALUES ('张三', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '机械组'),
-       ('李四', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '视觉组'),
-       ('王五', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '后勤组'),
-       ('赵六', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '雷达组'),
-       ('孙七', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92s1XjyCfeVXoa2LBIFP6', '视觉组');
+VALUES ('张三', '$2a$10$Cx7HNkyVEpVhTYyGnTqWeOuqON0xn7VMNKVaOLphkMbEXm8ZNnLWy', '机械组'),
+       ('李四', '$2a$10$Cx7HNkyVEpVhTYyGnTqWeOuqON0xn7VMNKVaOLphkMbEXm8ZNnLWy', '视觉组'),
+       ('王五', '$2a$10$Cx7HNkyVEpVhTYyGnTqWeOuqON0xn7VMNKVaOLphkMbEXm8ZNnLWy', '后勤组'),
+       ('赵六', '$2a$10$Cx7HNkyVEpVhTYyGnTqWeOuqON0xn7VMNKVaOLphkMbEXm8ZNnLWy', '雷达组'),
+       ('孙七', '$2a$10$Cx7HNkyVEpVhTYyGnTqWeOuqON0xn7VMNKVaOLphkMbEXm8ZNnLWy', '视觉组');
 
 -- 插入分类：视觉、电控、硬件、机械
 INSERT INTO tb_material_category (category_name)

@@ -1,22 +1,20 @@
 package com.example.controller;
 
-import com.example.ExceptionHandler.AuthException;
 import com.example.dto.LoginDTO;
 import com.example.dto.PasswordChangeDTO;
+import com.example.mapper.UserMapper;
 import com.example.service.UserService;
 import com.example.vo.LoginResponseVO;
-import com.example.vo.UserSessionVO;
+import com.example.entity.User;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,62 +24,70 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    private static final String USER_INFO_SESSION_KEY = "user_info";
+    @Resource
+    private AuthenticationManager authenticationManager;
+    
+    @Resource
+    private UserMapper userMapper;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO, HttpServletRequest request) {
         try {
-            LoginResponseVO responseVO = userService.login(loginDTO.getUsername(), loginDTO.getPassword());
-            HttpSession session = request.getSession(true);
+            UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
+            Authentication authentication = authenticationManager.authenticate(token);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    responseVO.getUsername(),
-                    null,
-                    List.of(new SimpleGrantedAuthority(responseVO.getRole()))
-            );
-            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-            securityContext.setAuthentication(authToken);
-            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
-
-            UserSessionVO userSessionVO = new UserSessionVO();
-            userSessionVO.setUserId(responseVO.getUserId());
-            userSessionVO.setUsername(responseVO.getUsername());
-            userSessionVO.setRole(responseVO.getRole());
-
-            session.setAttribute(USER_INFO_SESSION_KEY, userSessionVO);
+            User user = userMapper.findByUsername(loginDTO.getUsername());
+            LoginResponseVO responseVO = new LoginResponseVO();
+            responseVO.setMessage("登录成功");
+            responseVO.setUserId(user.getUserId());
+            responseVO.setUsername(user.getUsername());
+            responseVO.setRole(user.getRoleName());
 
             return ResponseEntity.ok(responseVO);
-        } catch (AuthException e) {
-            return ResponseEntity.status(e.getStatus()).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("error", "用户名或密码无效"));
         }
     }
 
     @GetMapping("/user/role")
-    public ResponseEntity<Map<String, String>> getUserRole(HttpSession session) {
-        UserSessionVO user = (UserSessionVO) session.getAttribute(USER_INFO_SESSION_KEY);
-        if (user == null) {
-            return ResponseEntity.status(401).body(Map.of("error", "用户未登录或会话已过期"));
+    public ResponseEntity<Map<String, String>> getUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
+             return ResponseEntity.status(401).body(Map.of("error", "用户未登录"));
         }
-        return ResponseEntity.ok(Map.of("role", user.getRole()));
+        String role = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(Object::toString)
+                .orElse("N/A");
+        return ResponseEntity.ok(Map.of("role", role));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(HttpSession session) {
-        session.invalidate();
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        SecurityContextHolder.clearContext();
         return ResponseEntity.ok(Map.of("message", "登出成功"));
     }
 
     @PutMapping("/user/password")
-    public ResponseEntity<Map<String, String>> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO, HttpSession session) {
+    public ResponseEntity<Map<String, String>> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userMapper.findByUsername(username);
+
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "用户不存在"));
+        }
+        
         try {
-            UserSessionVO user = (UserSessionVO) session.getAttribute(USER_INFO_SESSION_KEY);
-            if (user == null) {
-                throw new AuthException(org.springframework.http.HttpStatus.UNAUTHORIZED, "用户未登录或会话已过期");
-            }
             userService.changePassword(user.getUserId(), passwordChangeDTO.getCurrentPassword(), passwordChangeDTO.getNewPassword());
             return ResponseEntity.ok(Map.of("message", "密码修改成功"));
-        } catch (AuthException e) {
-            return ResponseEntity.status(e.getStatus()).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(Map.of("error", e.getMessage()));
         }
     }
 }

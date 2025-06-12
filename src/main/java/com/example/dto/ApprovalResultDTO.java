@@ -1,19 +1,20 @@
 package com.example.dto;
-
 import lombok.Data;
-
 import jakarta.validation.constraints.NotNull;
 
 @Data
 public class ApprovalResultDTO {
     @NotNull(message = "审批ID不能为空")
-    private Integer approval_id;
-    @NotNull(message = "物资ID不能为空")
-    private Integer material_id;
-    @NotNull(message = "用户ID不能为空")
-    private Integer user_id;
-    @NotNull(message = "审批结果不能为空")
-    private Boolean approval_result;
+    private Integer approvalId;
 
-    private String approval_reason;
+    @NotNull(message = "物资ID不能为空")
+    private Integer materialId;
+
+    @NotNull(message = "用户ID不能为空")
+    private Integer userId;
+
+    @NotNull(message = "审批结果不能为空")
+    private Boolean approvalResult;
+
+    private String approvalReason;
 }

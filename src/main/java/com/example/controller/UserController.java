@@ -15,18 +15,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
-
     @Resource
     private UserService userService;
-
     @Resource
     private AuthenticationManager authenticationManager;
-    
     @Resource
     private UserMapper userMapper;
 
@@ -36,6 +34,10 @@ public class UserController {
             UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
             Authentication authentication = authenticationManager.authenticate(token);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            
+            // 重要：将SecurityContext存入Session
+            HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
             User user = userMapper.findByUsername(loginDTO.getUsername());
             LoginResponseVO responseVO = new LoginResponseVO();
@@ -43,13 +45,12 @@ public class UserController {
             responseVO.setUserId(user.getUserId());
             responseVO.setUsername(user.getUsername());
             responseVO.setRole(user.getRoleName());
-
             return ResponseEntity.ok(responseVO);
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "用户名或密码无效"));
         }
     }
-
+    
     @GetMapping("/user/role")
     public ResponseEntity<Map<String, String>> getUserRole() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -63,26 +64,17 @@ public class UserController {
         return ResponseEntity.ok(Map.of("role", role));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-        SecurityContextHolder.clearContext();
-        return ResponseEntity.ok(Map.of("message", "登出成功"));
-    }
+    // 注意：登出由Spring Security的LogoutFilter处理，所以不需要/logout的Controller
+    // 如果需要保留，确保它不会和SecurityConfig中的logout配置冲突
 
     @PutMapping("/user/password")
     public ResponseEntity<Map<String, String>> changePassword(@RequestBody PasswordChangeDTO passwordChangeDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userMapper.findByUsername(username);
-
         if (user == null) {
             return ResponseEntity.status(401).body(Map.of("error", "用户不存在"));
         }
-        
         try {
             userService.changePassword(user.getUserId(), passwordChangeDTO.getCurrentPassword(), passwordChangeDTO.getNewPassword());
             return ResponseEntity.ok(Map.of("message", "密码修改成功"));

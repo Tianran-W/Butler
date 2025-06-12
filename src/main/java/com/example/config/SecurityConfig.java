@@ -1,9 +1,10 @@
 package com.example.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer; // 导入Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,9 +13,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -33,17 +43,51 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("admin")
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
-                .formLogin(Customizer.withDefaults())
+                .formLogin(form -> form
+                        // loginProcessingUrl默认为/login，但我们有自定义的/api/login, 这里可以不指定
+                        .successHandler((request, response, authentication) -> {
+                            // 实际的登录成功逻辑在UserController中处理，这里可以留空或记录日志
+                            // successHandler的配置主要是为了防止默认的重定向行为
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            // 实际的登录失败逻辑在UserController中处理，这里配置返回401
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            Map<String, String> error = Map.of("error", "用户名或密码无效");
+                            response.getWriter().write(objectMapper.writeValueAsString(error));
+                        })
+                )
                 .logout(logout -> logout
-                        .logoutUrl("/api/logout") // 指定登出URL
+                        .logoutUrl("/api/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(200);
-                            response.getWriter().write("{\"message\": \"登出成功\"}");
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            Map<String, String> success = Map.of("message", "登出成功");
+                            response.getWriter().write(objectMapper.writeValueAsString(success));
+                        })
+                )
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                            Map<String, String> error = Map.of("error", "用户未认证，请先登录");
+                            response.getWriter().write(objectMapper.writeValueAsString(error));
+                        })
+                        // 为403 Forbidden也提供JSON响应
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+                             Map<String, String> error = Map.of("error", "权限不足");
+                             response.getWriter().write(objectMapper.writeValueAsString(error));
                         })
                 );
+
         return http.build();
     }
 }

@@ -93,7 +93,7 @@ VALUES ('张三', 'zhangsan@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2i
        ('王五', 'wangwu@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '后勤组'),
        ('赵六', 'zhaoliu@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '雷达组'),
        ('孙七', 'sunqi@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '视觉组');
-       
+
 -- 插入分类：视觉、电控、硬件、机械
 INSERT INTO tb_material_category (category_name)
 VALUES ('视觉'),
@@ -142,3 +142,12 @@ INSERT INTO tb_role (role_id, role_name, permissions) VALUES (2, 'user', 'read,w
 
 UPDATE tb_user SET role_id = 1 WHERE username = '张三'; 
 UPDATE tb_user SET role_id = 2 WHERE username IN ('李四', '王五', '赵六', '孙七')
+
+CREATE TABLE tb_battery_info (
+    material_id INTEGER PRIMARY KEY REFERENCES tb_material(material_id) ON DELETE CASCADE,
+    lifespan_cycles INTEGER NOT NULL,
+    current_cycles INTEGER NOT NULL DEFAULT 0
+);
+
+INSERT INTO tb_material_category (category_name) VALUES ('电池');
+

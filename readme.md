@@ -254,6 +254,39 @@ CREATE TABLE tb_image (
             "error": "用户未登录或会话已过期"
         }
         ```
+*   **用户注册**
+    *   URL：`/api/register`
+    *   方法：`POST`
+    *   请求体：
+        ```json
+        {
+          "username": "new_user",
+          "email": "new_user@example.com",
+          "password": "a_strong_password_123"
+        }
+        ```
+    *   返回（成功）：
+        ```json
+        {
+          "success": true,
+          "message": "注册成功"
+        }
+        ```
+    *   返回（失败 - 用户名已存在）：
+        ```json
+        {
+            "status": 400,
+            "code": "INVALID_PARAMETER",
+            "message": "用户名 'new_user' 已存在"
+        }
+        ```
+    *   返回（失败 - 其他）：
+        ```json
+        {
+          "error": "邮箱 'new_user@example.com' 已被注册"
+        }
+        ```
+
 ### 大模型物资推荐接口
 *   **获取推荐物资列表**
     *   URL：`/api/recommendMaterials`
@@ -363,6 +396,104 @@ CREATE TABLE tb_image (
             "batteryHealth": "良好"
         }]
         ```
+*   **新增电池**
+    *   URL：`/api/admin/batteries`
+    *   方法：`POST`
+    *   权限：管理员
+    *   描述：录入一个新的电池资产，包含型号、SN码和设计寿命。
+    *   请求体：
+        ```json
+        {
+          "modelName": "Tello 智能飞行电池",
+          "snCode": "TL-BATT-20240521-001",
+          "lifespanCycles": 150,
+          "isExpensive": 0
+        }
+        ```
+    *   返回：
+        ```json
+        {
+          "materialId": 21,
+          "modelName": "Tello 智能飞行电池",
+          "snCode": "TL-BATT-20240521-001",
+          "status": "在库可借",
+          "lifespanCycles": 150,
+          "currentCycles": 0
+        }
+        ```
+*   **查询所有电池**
+    *   URL：`/api/batteries`
+    *   方法：`GET`
+    *   描述：获取所有未报废电池的列表及其寿命状态。
+    *   返回：
+        ```json
+        [
+          {
+            "materialId": 21,
+            "modelName": "Tello 智能飞行电池",
+            "snCode": "TL-BATT-20240521-001",
+            "status": "在库可借",
+            "lifespanCycles": 150,
+            "currentCycles": 0
+          },
+          {
+            "materialId": 22,
+            "modelName": "DJI Mavic 3 智能飞行电池",
+            "snCode": "DJI-M3B-20231101-005",
+            "status": "已借出",
+            "lifespanCycles": 300,
+            "currentCycles": 42
+          }
+        ]
+        ```
+
+*   **查询单个电池详情**
+    *   URL：`/api/batteries/{materialId}`
+    *   方法：`GET`
+    *   描述：根据物资ID获取单个电池的详细信息。
+    *   返回：
+        ```json
+        {
+          "materialId": 22,
+          "modelName": "DJI Mavic 3 智能飞行电池",
+          "snCode": "DJI-M3B-20231101-005",
+          "status": "已借出",
+          "lifespanCycles": 300,
+          "currentCycles": 42
+        }
+        ```
+
+*   **更新电池信息**
+    *   URL：`/api/admin/batteries/{materialId}`
+    *   方法：`PUT`
+    *   权限：管理员
+    *   描述：更新电池的基础信息，如修正型号或设计寿命。
+    *   请求体：
+        ```json
+        {
+          "modelName": "DJI Mavic 3 Pro 智能飞行电池",
+          "lifespanCycles": 350
+        }
+        ```
+    *   返回：
+        ```json
+        {
+          "materialId": 22,
+          "modelName": "DJI Mavic 3 Pro 智能飞行电池",
+          "snCode": "DJI-M3B-20231101-005",
+          "status": "已借出",
+          "lifespanCycles": 350,
+          "currentCycles": 42
+        }
+        ```
+
+*   **删除（报废）电池**
+    *   URL：`/api/admin/batteries/{materialId}`
+    *   方法：`DELETE`
+    *   权限：管理员
+    *   描述：逻辑删除一个电池，将其状态更新为“已报废”。
+    *   返回：成功时返回 `204 No Content`，无响应体。
+
 ### SN码管理接口
 *   **SN码查询**
     *   URL：`/api/material/sn/{snCode}`

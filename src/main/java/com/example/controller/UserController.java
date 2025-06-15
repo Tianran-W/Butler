@@ -18,6 +18,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -31,9 +33,12 @@ public class UserController {
     private UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(@Valid @RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody RegisterDTO registerDTO) {
         userService.register(registerDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "注册成功"));
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("success", true);
+        responseBody.put("message", "注册成功");
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseBody);
     }
 
     @PostMapping("/login")

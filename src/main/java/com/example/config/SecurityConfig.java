@@ -40,16 +40,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("admin")
-                        .anyRequest().authenticated()
-                )
+                    .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/api/login", "/api/register").permitAll()
+                            .requestMatchers("/api/admin/**").hasAuthority("admin")
+                            .anyRequest().authenticated()
+                    )
                 .formLogin(form -> form
-                        // loginProcessingUrl默认为/login，但我们有自定义的/api/login, 这里可以不指定
                         .successHandler((request, response, authentication) -> {
-                            // 实际的登录成功逻辑在UserController中处理，这里可以留空或记录日志
-                            // successHandler的配置主要是为了防止默认的重定向行为
                         })
                         .failureHandler((request, response, exception) -> {
                             // 实际的登录失败逻辑在UserController中处理，这里配置返回401

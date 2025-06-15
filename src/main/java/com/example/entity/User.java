@@ -12,6 +12,7 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Integer userId;
     private String username;
+    private String email;
     private String password;
     private Integer roleId;
     private String department;

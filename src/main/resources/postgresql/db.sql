@@ -11,6 +11,7 @@ CREATE TABLE tb_user
 (
     user_id    SERIAL PRIMARY KEY,
     username   VARCHAR(50)  NOT NULL UNIQUE,
+    email      VARCHAR(100) NOT NULL UNIQUE,
     password   VARCHAR(255) NOT NULL,
     role_id    INTEGER REFERENCES tb_role (role_id),
     department VARCHAR(50)
@@ -86,13 +87,13 @@ CREATE TABLE tb_image (
 );
 
 -- 生成用户名单
-INSERT INTO tb_user (username, password, department)
-VALUES ('张三', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '机械组'),
-       ('李四', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '视觉组'),
-       ('王五', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '后勤组'),
-       ('赵六', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '雷达组'),
-       ('孙七', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '视觉组');
-
+INSERT INTO tb_user (username, email, password, department)
+VALUES ('张三', 'zhangsan@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '机械组'),
+       ('李四', 'lisi@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '视觉组'),
+       ('王五', 'wangwu@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '后勤组'),
+       ('赵六', 'zhaoliu@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '雷达组'),
+       ('孙七', 'sunqi@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '视觉组');
+       
 -- 插入分类：视觉、电控、硬件、机械
 INSERT INTO tb_material_category (category_name)
 VALUES ('视觉'),
@@ -139,5 +140,5 @@ VALUES
 INSERT INTO tb_role (role_id, role_name, permissions) VALUES (1, 'admin', 'all');
 INSERT INTO tb_role (role_id, role_name, permissions) VALUES (2, 'user', 'read,write');
 
-UPDATE tb_user SET role_id = 1 WHERE username = '张三';
+UPDATE tb_user SET role_id = 1 WHERE username = '张三'; 
 UPDATE tb_user SET role_id = 2 WHERE username IN ('李四', '王五', '赵六', '孙七')

@@ -8,7 +8,9 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -18,13 +20,16 @@ public class BatteryController {
     @Resource
     private BatteryService batteryService;
 
-    /**
-     * 新增电池
-     */
+
     @PostMapping("/admin/batteries")
     public ResponseEntity<BatteryVO> createBattery(@Valid @RequestBody BatteryCreateDTO createDTO) {
         BatteryVO newBattery = batteryService.createBattery(createDTO);
-        return ResponseEntity.ok(newBattery);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest() 
+                .path("/{materialId}") 
+                .buildAndExpand(newBattery.getMaterialId()) 
+                .toUri(); 
+        return ResponseEntity.created(location).body(newBattery);
     }
 
     /**

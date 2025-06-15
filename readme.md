@@ -153,7 +153,7 @@ mvn spring-boot:run
 *   **SN码管理**
     *   完善SN码录入和查询功能
 
-## 二、数据库图片表设计
+## 二、数据库表设计
 ```sql
 CREATE TABLE tb_image (
     image_id SERIAL PRIMARY KEY,
@@ -161,6 +161,12 @@ CREATE TABLE tb_image (
     record_id INTEGER NOT NULL,
     image_path VARCHAR(255) NOT NULL,
     upload_time TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE tb_battery_info (
+    material_id INTEGER PRIMARY KEY REFERENCES tb_material(material_id) ON DELETE CASCADE,
+    lifespan_cycles INTEGER NOT NULL,
+    current_cycles INTEGER NOT NULL DEFAULT 0
 );
 ```
 ## 二、接口迭代设计

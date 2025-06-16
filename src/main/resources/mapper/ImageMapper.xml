@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ImageMapper">
+    <select id="findByRecordTypeAndRecordId" resultType="com.example.entity.Image">
+        SELECT *
+        FROM tb_image
+        WHERE record_type = #{recordType} AND record_id = #{recordId}
+        ORDER BY upload_time DESC
+    </select>
+</mapper>

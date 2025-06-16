@@ -359,25 +359,61 @@ CREATE TABLE tb_battery_info (
             "reimbursementId": "BX202306001"
         }
         ```
-### 借还照片管理接口
-*   **上传借还照片并直接关联记录**
+### 图片服务接口
+*   **上传图片**
     *   URL：`/api/uploadImage`
     *   方法：`POST`
-    *   请求体 ：
-        ```json
-        {
-            "file": "<MultipartFile>", 
-            "recordType": "string",    // 'borrow', 'return', 'scrap'
-            "recordId": "integer"
-        }
-        ```
+    *   描述：上传一张图片，并将其与一个具体的记录（如借用、归还、报废等）关联。
+    *   请求类型：`multipart/form-data`
+    *   请求参数：
+        *   `file`: (必需) 图片文件
+        *   `recordType`: (必需) 关联的记录类型，字符串，可选值为 `borrow`, `return`, `scrap`
+        *   `recordId`: (必需) 关联的记录ID，整数
     *   返回：
         ```json
         {
-            "imageId": 101,
-            "imagePath": "/uploads/borrow/20230601/abc.jpg" 
+          "imageId": 123,
+          "imagePath": "/borrow/2024-06-12/a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890.jpg"
         }
         ```
+
+*   **下载/查看图片**
+    *   URL：`/api/images/{imageId}`
+    *   方法：`GET`
+    *   描述：根据图片ID获取图片文件。浏览器可以直接显示，工具会下载文件。
+    *   返回：图片文件本身，响应头 `Content-Type` 根据文件类型动态设置。
+
+*   **查询关联记录的图片列表**
+    *   URL：`/api/images/record/{recordType}/{recordId}`
+    *   方法：`GET`
+    *   权限：已认证用户
+    *   描述：根据记录类型和记录ID，查询所有关联的图片元数据。
+    *   返回：
+        ```json
+        [
+          {
+            "imageId": 123,
+            "recordType": "borrow",
+            "recordId": 55,
+            "imagePath": "/borrow/2024-06-12/a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890.jpg",
+            "uploadTime": "2024-06-12T10:30:00"
+          },
+          {
+            "imageId": 124,
+            "recordType": "borrow",
+            "recordId": 55,
+            "imagePath": "/borrow/2024-06-12/f6e5d4c3-b2a1-0987-6f5e-4d3c2b1a0987.png",
+            "uploadTime": "2024-06-12T10:31:15"
+          }
+        ]
+        ```
+
+*   **删除图片**
+    *   URL：`/api/images/{imageId}`
+    *   方法：`DELETE`
+    *   权限：已认证用户
+    *   描述：根据图片ID从服务器文件系统和数据库中删除指定的图片。
+    *   返回：成功时返回 `204 No Content`，无响应体。
 
 ### 电池状态接口
 *   **提交电池状态**

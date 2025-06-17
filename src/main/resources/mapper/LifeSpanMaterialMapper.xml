@@ -15,8 +15,8 @@
             tb_material m
                 LEFT JOIN
             tb_material_category c ON m.category_id = c.category_id
+        WHERE c.category_name IS NULL OR c.category_name != '电池'
     </select>
-
     <select id="findBySnCode" resultType="com.example.vo.MaterialVO">
         SELECT
             m.material_id AS materialId,
@@ -31,6 +31,6 @@
             tb_material m
                 LEFT JOIN
             tb_material_category c ON m.category_id = c.category_id
-        WHERE m.sn_code = #{snCode}
+        WHERE m.sn_code = #{snCode} AND (c.category_name IS NULL OR c.category_name != '电池')
     </select>
 </mapper>

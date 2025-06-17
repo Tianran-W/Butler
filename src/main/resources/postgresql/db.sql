@@ -5,7 +5,6 @@ CREATE TABLE tb_role
     role_name   VARCHAR(50) NOT NULL,
     permissions TEXT
 );
-
 -- 创建用户表
 CREATE TABLE tb_user
 (
@@ -16,7 +15,6 @@ CREATE TABLE tb_user
     role_id    INTEGER REFERENCES tb_role (role_id),
     department VARCHAR(50)
 );
-
 -- 创建物资分类表
 CREATE TABLE tb_material_category
 (
@@ -24,7 +22,6 @@ CREATE TABLE tb_material_category
     category_name VARCHAR(50) NOT NULL
 );
 ALTER TABLE tb_material_category ADD CONSTRAINT unique_category_name UNIQUE (category_name);
-
 -- 创建物资表
 CREATE TABLE tb_material
 (
@@ -37,7 +34,16 @@ CREATE TABLE tb_material
     usage_limit   INTEGER,
     status        VARCHAR(20)  NOT NULL
 );
-
+-- 创建独立的电池表
+CREATE TABLE tb_battery
+(
+    battery_id      SERIAL PRIMARY KEY,
+    model_name      VARCHAR(100) NOT NULL,
+    sn_code         VARCHAR(50)  NOT NULL UNIQUE,
+    status          VARCHAR(20)  NOT NULL,
+    lifespan_cycles INTEGER,
+    current_cycles  INTEGER      NOT NULL DEFAULT 0
+);
 -- 创建物资使用记录表
 CREATE TABLE tb_material_usage_record
 (
@@ -48,7 +54,6 @@ CREATE TABLE tb_material_usage_record
     return_time   TIMESTAMP,
     usage_project VARCHAR(100)
 );
-
 -- 创建审批表
 CREATE TABLE tb_approval
 (
@@ -59,17 +64,15 @@ CREATE TABLE tb_approval
     approval_status VARCHAR(20) NOT NULL,
     approval_time   TIMESTAMP
 );
-
--- 创建电池状态表
+-- 创建电池状态表，关联新的电池表
 CREATE TABLE tb_battery_status
 (
     status_id     SERIAL PRIMARY KEY,
-    material_id   INTEGER REFERENCES tb_material (material_id),
+    battery_id    INTEGER REFERENCES tb_battery (battery_id) ON DELETE CASCADE,
     battery_level INTEGER CHECK (battery_level BETWEEN 0 AND 100),
     battery_health VARCHAR(20),
     record_time TIMESTAMP NOT NULL
 );
-
 -- 创建报销关联表
 CREATE TABLE tb_reimbursement_relation
 (
@@ -77,7 +80,6 @@ CREATE TABLE tb_reimbursement_relation
     material_id      INTEGER REFERENCES tb_material (material_id),
     reimbursement_id VARCHAR(50) NOT NULL
 );
-
 CREATE TABLE tb_image (
     image_id SERIAL PRIMARY KEY,
     record_type VARCHAR(20) NOT NULL CHECK (record_type IN ('borrow', 'return', 'scrap')),
@@ -85,7 +87,6 @@ CREATE TABLE tb_image (
     image_path VARCHAR(255) NOT NULL,
     upload_time TIMESTAMP DEFAULT NOW()
 );
-
 -- 生成用户名单
 INSERT INTO tb_user (username, email, password, department)
 VALUES ('张三', 'zhangsan@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '机械组'),
@@ -93,14 +94,12 @@ VALUES ('张三', 'zhangsan@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2i
        ('王五', 'wangwu@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '后勤组'),
        ('赵六', 'zhaoliu@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '雷达组'),
        ('孙七', 'sunqi@example.com', '$2a$10$XPW39X5zW9jhRt3yIIwW3.OPhpEv2ijsQlqEnjKRBUP1vdlUsNWy.', '视觉组');
-
 -- 插入分类：视觉、电控、硬件、机械
 INSERT INTO tb_material_category (category_name)
 VALUES ('视觉'),
        ('电控'),
        ('硬件'),
        ('机械');
-
 -- 视觉类物资
 INSERT INTO tb_material (material_name, category_id, is_expensive, sn_code, quantity, usage_limit, status)
 VALUES
@@ -109,7 +108,6 @@ VALUES
     ('视觉光源LED条形', 1, 0, 'VIS-2025003', 8, 7, '在库可借'),
     ('图像采集卡PCIe', 1, 1, 'VIS-2025004', 2, 15, '在库可借'),
     ('标定板12*8', 1, 0, 'VIS-2025005', 4, 7, '在库可借');
-
 -- 电控类物资
 INSERT INTO tb_material (material_name, category_id, is_expensive, sn_code, quantity, usage_limit, status)
 VALUES
@@ -118,7 +116,6 @@ VALUES
     ('步进电机驱动TB6600', 2, 0, 'ELE-2025008', 8, 10, '已借出'),
     ('舵机MG996R', 2, 0, 'ELE-2025009', 20, 7, '在库可借'),
     ('PLC西门子S7-1200', 2, 1, 'ELE-2025010', 2, 14, '已借出');
-
 -- 硬件类物资
 INSERT INTO tb_material (material_name, category_id, is_expensive, sn_code, quantity, usage_limit, status)
 VALUES
@@ -127,7 +124,6 @@ VALUES
     ('超声波传感器HC-SR04', 3, 0, 'HAR-2025013', 15, 7, '在库可借'),
     ('红外避障传感器', 3, 0, 'HAR-2025014', 10, 7, '在库可借'),
     ('激光测距仪VL53L0X', 3, 1, 'HAR-2025015', 3, 10, '已借出');
-
 -- 机械类物资
 INSERT INTO tb_material (material_name, category_id, is_expensive, sn_code, quantity, usage_limit, status)
 VALUES
@@ -136,20 +132,10 @@ VALUES
     ('直流减速电机', 4, 0, 'MEC-2025018', 10, 10, '已借出'),
     ('联轴器弹性', 4, 0, 'MEC-2025019', 30, 7, '在库可借'),
     ('机械臂套件6DOF', 4, 1, 'MEC-2025020', 2, 15, '在库可借');
-
 INSERT INTO tb_role (role_id, role_name, permissions) VALUES (1, 'admin', 'all');
 INSERT INTO tb_role (role_id, role_name, permissions) VALUES (2, 'user', 'read,write');
-
-UPDATE tb_user SET role_id = 1 WHERE username = '张三'; 
-UPDATE tb_user SET role_id = 2 WHERE username IN ('李四', '王五', '赵六', '孙七')
-
-CREATE TABLE tb_battery_info (
-    material_id INTEGER PRIMARY KEY REFERENCES tb_material(material_id) ON DELETE CASCADE,
-    lifespan_cycles INTEGER NOT NULL,
-    current_cycles INTEGER NOT NULL DEFAULT 0
-);
-
-INSERT INTO tb_material_category (category_name) VALUES ('电池');
+UPDATE tb_user SET role_id = 1 WHERE username = '张三';
+UPDATE tb_user SET role_id = 2 WHERE username IN ('李四', '王五', '赵六', '孙七');
 
 INSERT INTO tb_material_usage_record (material_id, user_id, borrow_time, return_time, usage_project) VALUES
 -- 机器人对抗赛 (RoboMaster风格) - 20条记录
@@ -173,7 +159,6 @@ INSERT INTO tb_material_usage_record (material_id, user_id, borrow_time, return_
 (4, 5, '2024-05-02 11:05:00', '2024-05-16 19:05:00', '机器人对抗赛-高速图像传输'),
 (10, 3, '2024-05-03 14:00:00', '2024-05-17 20:00:00', '机器人对抗赛-工程机器人PLC控制'),
 (20, 1, '2024-05-03 14:05:00', '2024-05-17 20:05:00', '机器人对抗赛-工程机器人机械臂'),
-
 -- 机器人寻迹避障项目 - 20条记录
 (7, 4, '2024-01-10 09:00:00', '2024-01-24 17:00:00', '智能车寻迹项目-主控板'),
 (13, 4, '2024-01-10 09:05:00', '2024-01-24 17:05:00', '智能车寻迹项目-超声波避障'),
@@ -195,7 +180,6 @@ INSERT INTO tb_material_usage_record (material_id, user_id, borrow_time, return_
 (16, 1, '2024-04-12 11:05:00', '2024-04-26 19:05:00', '毕业设计-自主导航小车-车体结构'),
 (2, 5, '2024-05-10 09:00:00', '2024-05-24 17:00:00', '视觉循迹项目-摄像头选型'),
 (3, 5, '2024-05-10 09:05:00', '2024-05-24 17:05:00', '视觉循迹项目-补光灯'),
-
 -- 机器视觉开发项目 - 20条记录
 (1, 2, '2023-11-01 10:00:00', '2023-11-15 18:00:00', '工业零件缺陷检测项目-相机'),
 (3, 2, '2023-11-01 10:05:00', '2023-11-15 18:05:00', '工业零件缺陷检测项目-光源'),
@@ -217,7 +201,6 @@ INSERT INTO tb_material_usage_record (material_id, user_id, borrow_time, return_
 (11, 2, '2024-05-20 10:05:00', '2024-06-03 18:05:00', '深度学习模型训练-GPU平台'),
 (4, 2, '2024-06-01 15:00:00', '2024-06-15 21:00:00', '高速相机数据采集'),
 (10, 3, '2024-06-01 15:05:00', '2024-06-15 21:05:00', '自动化产线视觉集成'),
-
 -- 嵌入式与硬件开发 - 20条记录
 (6, 4, '2023-10-10 09:00:00', '2023-10-24 17:00:00', 'STM32驱动开发'),
 (7, 4, '2023-10-10 09:05:00', '2023-10-24 17:05:00', 'Arduino原型验证'),
@@ -239,7 +222,6 @@ INSERT INTO tb_material_usage_record (material_id, user_id, borrow_time, return_
 (10, 4, '2024-05-20 14:00:00', '2024-06-03 20:00:00', '工业自动化控制实验'),
 (11, 5, '2024-06-05 09:00:00', '2024-06-19 17:00:00', '边缘计算设备测试'),
 (12, 4, '2024-06-05 09:05:00', '2024-06-19 17:05:00', '长距离无线通信测试'),
-
 -- 机械设计与制造 - 20条记录
 (16, 1, '2024-01-05 10:00:00', '2024-01-19 18:00:00', '机器人底盘结构设计'),
 (17, 1, '2024-01-05 10:05:00', '2024-01-19 18:05:00', '机器人舵机安装'),

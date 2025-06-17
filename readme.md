@@ -415,126 +415,159 @@ CREATE TABLE tb_battery_info (
     *   描述：根据图片ID从服务器文件系统和数据库中删除指定的图片。
     *   返回：成功时返回 `204 No Content`，无响应体。
 
-### 电池状态接口
-*   **提交电池状态**
-    *   URL：`/api/batteryStatus`
-    *   方法：`POST`
-    *   请求体：
-        ```json
-        {
-            "materialId": 8,
-            "batteryLevel": 80,
-            "batteryHealth": "良好"
-        }
-        ```
-*   **查询电池历史状态**
-    *   URL：`/api/batteryHistory/{materialId}`
-    *   方法：`GET`
-    *   返回：
-        ```json
-        [{
-            "recordTime": "2023-05-01 10:30",
-            "batteryLevel": 85,
-            "batteryHealth": "良好"
-        }]
-        ```
+
+### 电池管理接口
+
 *   **新增电池**
     *   URL：`/api/admin/batteries`
     *   方法：`POST`
-    *   权限：管理员
-    *   描述：录入一个新的电池资产，包含型号、SN码和设计寿命。
-    *   请求体：
+    *   权限：`admin`
+    *   描述：管理员新增一个电池资产。电池创建后，状态默认为“在库可借”，当前循环次数为0。
+    *   请求体 (JSON):
         ```json
         {
-          "modelName": "Tello 智能飞行电池",
-          "snCode": "TL-BATT-20240521-001",
-          "lifespanCycles": 150,
-          "isExpensive": 0
+          "modelName": "DJI Tello 智能飞行电池",
+          "snCode": "BATT-SN-20240612001",
+          "lifespanCycles": 150
         }
         ```
-    *   返回：
+    *   成功响应 (201 Created):
         ```json
         {
-          "materialId": 21,
-          "modelName": "Tello 智能飞行电池",
-          "snCode": "TL-BATT-20240521-001",
+          "batteryId": 1,
+          "modelName": "DJI Tello 智能飞行电池",
+          "snCode": "BATT-SN-20240612001",
           "status": "在库可借",
           "lifespanCycles": 150,
           "currentCycles": 0
         }
         ```
-*   **查询所有电池**
+
+*   **获取所有电池列表**
     *   URL：`/api/batteries`
     *   方法：`GET`
-    *   描述：获取所有未报废电池的列表及其寿命状态。
-    *   返回：
+    *   权限：已认证用户
+    *   描述：获取所有未被报废的电池列表。
+    *   成功响应 (200 OK):
         ```json
         [
           {
-            "materialId": 21,
-            "modelName": "Tello 智能飞行电池",
-            "snCode": "TL-BATT-20240521-001",
+            "batteryId": 1,
+            "modelName": "DJI Tello 智能飞行电池",
+            "snCode": "BATT-SN-20240612001",
             "status": "在库可借",
             "lifespanCycles": 150,
-            "currentCycles": 0
+            "currentCycles": 10
           },
           {
-            "materialId": 22,
-            "modelName": "DJI Mavic 3 智能飞行电池",
-            "snCode": "DJI-M3B-20231101-005",
+            "batteryId": 2,
+            "modelName": "DJI Mavic 3 Pro 电池",
+            "snCode": "BATT-SN-20240611005",
             "status": "已借出",
             "lifespanCycles": 300,
-            "currentCycles": 42
+            "currentCycles": 55
           }
         ]
         ```
 
-*   **查询单个电池详情**
-    *   URL：`/api/batteries/{materialId}`
+*   **获取单个电池详情**
+    *   URL：`/api/batteries/{batteryId}`
     *   方法：`GET`
-    *   描述：根据物资ID获取单个电池的详细信息。
-    *   返回：
+    *   权限：已认证用户
+    *   描述：根据电池ID查询其详细信息。
+    *   URL参数：
+        *   `batteryId`: (必需) 电池的唯一ID，整数。
+    *   成功响应 (200 OK):
         ```json
         {
-          "materialId": 22,
-          "modelName": "DJI Mavic 3 智能飞行电池",
-          "snCode": "DJI-M3B-20231101-005",
-          "status": "已借出",
-          "lifespanCycles": 300,
-          "currentCycles": 42
+          "batteryId": 1,
+          "modelName": "DJI Tello 智能飞行电池",
+          "snCode": "BATT-SN-20240612001",
+          "status": "在库可借",
+          "lifespanCycles": 150,
+          "currentCycles": 10
         }
         ```
+    *   失败响应 (404 Not Found): 如果提供的`batteryId`不存在。
 
 *   **更新电池信息**
-    *   URL：`/api/admin/batteries/{materialId}`
+    *   URL：`/api/admin/batteries/{batteryId}`
     *   方法：`PUT`
-    *   权限：管理员
-    *   描述：更新电池的基础信息，如修正型号或设计寿命。
-    *   请求体：
+    *   权限：`admin`
+    *   描述：管理员更新一个已存在电池的非关键信息，如型号名称、设计寿命等。
+    *   URL参数：
+        *   `batteryId`: (必需) 待更新电池的ID，整数。
+    *   请求体 (JSON):
         ```json
         {
-          "modelName": "DJI Mavic 3 Pro 智能飞行电池",
-          "lifespanCycles": 350
+          "modelName": "DJI Tello 智能飞行电池 (增强版)",
+          "lifespanCycles": 200
         }
         ```
-    *   返回：
+    *   成功响应 (200 OK):
         ```json
         {
-          "materialId": 22,
-          "modelName": "DJI Mavic 3 Pro 智能飞行电池",
-          "snCode": "DJI-M3B-20231101-005",
-          "status": "已借出",
-          "lifespanCycles": 350,
-          "currentCycles": 42
+          "batteryId": 1,
+          "modelName": "DJI Tello 智能飞行电池 (增强版)",
+          "snCode": "BATT-SN-20240612001",
+          "status": "在库可借",
+          "lifespanCycles": 200,
+          "currentCycles": 10
         }
         ```
 
-*   **删除（报废）电池**
-    *   URL：`/api/admin/batteries/{materialId}`
+*   **报废电池**
+    *   URL：`/api/admin/batteries/{batteryId}`
     *   方法：`DELETE`
-    *   权限：管理员
-    *   描述：逻辑删除一个电池，将其状态更新为“已报废”。
-    *   返回：成功时返回 `204 No Content`，无响应体。
+    *   权限：`admin`
+    *   描述：管理员将指定ID的电池状态标记为“已报废”。这是一个逻辑删除，记录仍然保留在数据库中。
+    *   URL参数：
+        *   `batteryId`: (必需) 待报废电池的ID，整数。
+    *   成功响应 (204 No Content): 无响应体。
+
+### 电池状态接口
+
+*   **提交电池状态**
+    *   URL：`/api/batteryStatus`
+    *   方法：`POST`
+    *   权限：已认证用户
+    *   描述：用户在使用电池后，提交其当前的状态信息，如电量、健康度。
+    *   请求体 (JSON):
+        ```json
+        {
+          "batteryId": 1,
+          "batteryLevel": 88,
+          "batteryHealth": "良好"
+        }
+        ```
+    *   成功响应 (200 OK): 无响应体。
+
+*   **查询电池历史状态**
+    *   URL：`/api/batteryHistory/{batteryId}`
+    *   方法：`GET`
+    *   权限：已认证用户
+    *   描述：根据电池ID，查询该电池的所有历史状态记录，按时间倒序排列。
+    *   URL参数：
+        *   `batteryId`: (必需) 电池的ID，整数。
+    *   成功响应 (200 OK):
+        ```json
+        [
+          {
+            "statusId": 5,
+            "batteryId": 1,
+            "batteryLevel": 88,
+            "batteryHealth": "良好",
+            "recordTime": "2024-06-12T15:45:00"
+          },
+          {
+            "statusId": 2,
+            "batteryId": 1,
+            "batteryLevel": 95,
+            "batteryHealth": "良好",
+            "recordTime": "2024-06-11T10:20:00"
+          }
+        ]
+        ```
 
 ### SN码管理接口
 *   **SN码查询**
@@ -548,3 +581,7 @@ CREATE TABLE tb_battery_info (
 | 管理员         | ✓          | ✓            |
 | 普通用户       | ✗          | ✓            |
 | 未认证用户     | ✗          | ✗            |
+
+
+
+

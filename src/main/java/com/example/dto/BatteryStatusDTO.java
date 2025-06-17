@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class BatteryStatusDTO {
-    private Integer materialId;
+    private Integer batteryId;
     private Integer batteryLevel;
     private String batteryHealth;
 }

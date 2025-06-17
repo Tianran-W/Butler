@@ -20,57 +20,44 @@ public class BatteryController {
     @Resource
     private BatteryService batteryService;
 
-
     @PostMapping("/admin/batteries")
     public ResponseEntity<BatteryVO> createBattery(@Valid @RequestBody BatteryCreateDTO createDTO) {
         BatteryVO newBattery = batteryService.createBattery(createDTO);
         URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest() 
-                .path("/{materialId}") 
-                .buildAndExpand(newBattery.getMaterialId()) 
-                .toUri(); 
+                .fromCurrentRequest()
+                .path("/{batteryId}")
+                .buildAndExpand(newBattery.getBatteryId())
+                .toUri();
         return ResponseEntity.created(location).body(newBattery);
     }
 
-    /**
-     * 查询所有电池
-     */
     @GetMapping("/batteries")
     public ResponseEntity<List<BatteryVO>> getAllBatteries() {
         List<BatteryVO> batteries = batteryService.getAllBatteries();
         return ResponseEntity.ok(batteries);
     }
 
-    /**
-     * 查询单个电池详情
-     */
-    @GetMapping("/batteries/{materialId}")
-    public ResponseEntity<BatteryVO> getBatteryById(@PathVariable Integer materialId) {
-        BatteryVO battery = batteryService.getBatteryById(materialId);
+    @GetMapping("/batteries/{batteryId}")
+    public ResponseEntity<BatteryVO> getBatteryById(@PathVariable Integer batteryId) {
+        BatteryVO battery = batteryService.getBatteryById(batteryId);
         if (battery == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(battery);
     }
 
-    /**
-     * 更新电池信息
-     */
-    @PutMapping("/admin/batteries/{materialId}")
-    public ResponseEntity<BatteryVO> updateBattery(@PathVariable Integer materialId, @RequestBody BatteryUpdateDTO updateDTO) {
-        BatteryVO updatedBattery = batteryService.updateBattery(materialId, updateDTO);
+    @PutMapping("/admin/batteries/{batteryId}")
+    public ResponseEntity<BatteryVO> updateBattery(@PathVariable Integer batteryId, @RequestBody BatteryUpdateDTO updateDTO) {
+        BatteryVO updatedBattery = batteryService.updateBattery(batteryId, updateDTO);
         if (updatedBattery == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updatedBattery);
     }
 
-    /**
-     * 删除（报废）电池
-     */
-    @DeleteMapping("/admin/batteries/{materialId}")
-    public ResponseEntity<Void> scrapBattery(@PathVariable Integer materialId) {
-        batteryService.scrapBattery(materialId);
+    @DeleteMapping("/admin/batteries/{batteryId}")
+    public ResponseEntity<Void> scrapBattery(@PathVariable Integer batteryId) {
+        batteryService.scrapBattery(batteryId);
         return ResponseEntity.noContent().build();
     }
 }

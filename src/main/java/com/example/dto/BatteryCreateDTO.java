@@ -16,7 +16,4 @@ public class BatteryCreateDTO {
     @NotNull(message = "设计寿命不能为空")
     @PositiveOrZero(message = "设计寿命不能为负数")
     private Integer lifespanCycles;
-
-    @NotNull(message = "是否贵重不能为空")
-    private Integer isExpensive;
 }

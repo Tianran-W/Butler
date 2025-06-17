@@ -23,9 +23,9 @@ public class BatteryStatusController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/batteryHistory/{materialId}")
-    public ResponseEntity<List<BatteryStatus>> getBatteryHistory(@PathVariable Integer materialId) {
-        List<BatteryStatus> history = batteryStatusService.getBatteryHistory(materialId);
+    @GetMapping("/batteryHistory/{batteryId}")
+    public ResponseEntity<List<BatteryStatus>> getBatteryHistory(@PathVariable Integer batteryId) {
+        List<BatteryStatus> history = batteryStatusService.getBatteryHistory(batteryId);
         return ResponseEntity.ok(history);
     }
 }

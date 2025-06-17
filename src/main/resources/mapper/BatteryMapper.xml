@@ -3,8 +3,8 @@
 <mapper namespace="com.example.mapper.BatteryMapper">
 
     <resultMap id="batteryVOResultMap" type="com.example.vo.BatteryVO">
-        <id property="materialId" column="material_id"/>
-        <result property="modelName" column="material_name"/>
+        <id property="batteryId" column="battery_id"/>
+        <result property="modelName" column="model_name"/>
         <result property="snCode" column="sn_code"/>
         <result property="status" column="status"/>
         <result property="lifespanCycles" column="lifespan_cycles"/>
@@ -13,43 +13,32 @@
 
     <select id="findAllBatteries" resultMap="batteryVOResultMap">
         SELECT
-            m.material_id,
-            m.material_name,
-            m.sn_code,
-            m.status,
-            bi.lifespan_cycles,
-            bi.current_cycles
+            battery_id,
+            model_name,
+            sn_code,
+            status,
+            lifespan_cycles,
+            current_cycles
         FROM
-            tb_material m
-        JOIN
-            tb_battery_info bi ON m.material_id = bi.material_id
+            tb_battery
         WHERE
-            m.status != '已报废'
-        ORDER BY m.material_id
+            status != '已报废'
+        ORDER BY
+            battery_id
     </select>
 
-    <select id="findBatteryById" resultMap="batteryVOResultMap">
+    <select id="findVOById" resultMap="batteryVOResultMap">
         SELECT
-            m.material_id,
-            m.material_name,
-            m.sn_code,
-            m.status,
-            bi.lifespan_cycles,
-            bi.current_cycles
+            battery_id,
+            model_name,
+            sn_code,
+            status,
+            lifespan_cycles,
+            current_cycles
         FROM
-            tb_material m
-        JOIN
-            tb_battery_info bi ON m.material_id = bi.material_id
+            tb_battery
         WHERE
-            m.material_id = #{materialId}
+            battery_id = #{batteryId}
     </select>
-
-    <select id="findCategoryIdByName" resultType="java.lang.Integer">
-        SELECT category_id FROM tb_material_category WHERE category_name = #{categoryName}
-    </select>
-
-    <update id="updateMaterialStatus">
-        UPDATE tb_material SET status = #{status} WHERE material_id = #{materialId}
-    </update>
 
 </mapper>

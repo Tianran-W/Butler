@@ -9,7 +9,7 @@ import java.util.List;
 public interface BatteryService {
     BatteryVO createBattery(BatteryCreateDTO createDTO);
     List<BatteryVO> getAllBatteries();
-    BatteryVO getBatteryById(Integer materialId);
-    BatteryVO updateBattery(Integer materialId, BatteryUpdateDTO updateDTO);
-    void scrapBattery(Integer materialId);
+    BatteryVO getBatteryById(Integer batteryId);
+    BatteryVO updateBattery(Integer batteryId, BatteryUpdateDTO updateDTO);
+    void scrapBattery(Integer batteryId);
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class BatteryVO {
-    private Integer materialId;
+    private Integer batteryId;
     private String modelName;
     private String snCode;
     private String status;

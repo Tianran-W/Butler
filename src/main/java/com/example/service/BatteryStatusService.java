@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface BatteryStatusService {
     void saveBatteryStatus(BatteryStatusDTO batteryStatusDTO);
-    List<BatteryStatus> getBatteryHistory(Integer materialId);
+    List<BatteryStatus> getBatteryHistory(Integer batteryId);
 }

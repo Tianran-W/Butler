@@ -8,4 +8,5 @@ public class LoginResponseVO {
     private Integer userId;
     private String username;
     private String role;
+    private String email;
 }

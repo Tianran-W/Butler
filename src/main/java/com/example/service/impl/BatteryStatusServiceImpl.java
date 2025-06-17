@@ -20,7 +20,7 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
     @Override
     public void saveBatteryStatus(BatteryStatusDTO batteryStatusDTO) {
         BatteryStatus batteryStatus = new BatteryStatus();
-        batteryStatus.setMaterialId(batteryStatusDTO.getMaterialId());
+        batteryStatus.setBatteryId(batteryStatusDTO.getBatteryId());
         batteryStatus.setBatteryLevel(batteryStatusDTO.getBatteryLevel());
         batteryStatus.setBatteryHealth(batteryStatusDTO.getBatteryHealth());
         batteryStatus.setRecordTime(LocalDateTime.now());
@@ -28,9 +28,9 @@ public class BatteryStatusServiceImpl implements BatteryStatusService {
     }
 
     @Override
-    public List<BatteryStatus> getBatteryHistory(Integer materialId) {
+    public List<BatteryStatus> getBatteryHistory(Integer batteryId) {
         QueryWrapper<BatteryStatus> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("material_id", materialId).orderByDesc("record_time");
+        queryWrapper.eq("battery_id", batteryId).orderByDesc("record_time");
         return batteryStatusMapper.selectList(queryWrapper);
     }
 }

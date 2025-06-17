@@ -158,7 +158,7 @@ mvn spring-boot:run
 CREATE TABLE tb_image (
     image_id SERIAL PRIMARY KEY,
     record_type VARCHAR(20) NOT NULL CHECK (record_type IN ('borrow', 'return', 'scrap')),
-    record_id INTEGER NOT NULL,
+    record_id VARCHAR(20) NOT NULL,
     image_path VARCHAR(255) NOT NULL,
     upload_time TIMESTAMP DEFAULT NOW()
 );
@@ -415,7 +415,23 @@ CREATE TABLE tb_battery_info (
     *   描述：根据图片ID从服务器文件系统和数据库中删除指定的图片。
     *   返回：成功时返回 `204 No Content`，无响应体。
 
-
+*   **查询物资关联的图片列表**
+    *   URL：`/api/images/material/{materialId}/{recordType}`
+    *   方法：`GET`
+    *   权限：已认证用户
+    *   描述：根据物资ID和记录类型，查询所有关联的图片元数据。主要用于前端展示特定物资在特定环节（如借用、归还）的照片。
+    *   返回：
+        ```json
+        [
+          {
+            "imageId": 125,
+            "recordType": "return",
+            "recordId": "15",
+            "imagePath": "/return/2024-06-13/b1c2d3e4-f5a6-b789-c1d2-e3f4a5b67890.jpg",
+            "uploadTime": "2024-06-13T11:00:00"
+          }
+        ]
+        ```
 ### 电池管理接口
 
 *   **新增电池**
@@ -581,7 +597,4 @@ CREATE TABLE tb_battery_info (
 | 管理员         | ✓          | ✓            |
 | 普通用户       | ✗          | ✓            |
 | 未认证用户     | ✗          | ✗            |
-
-
-
 

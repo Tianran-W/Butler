@@ -12,7 +12,7 @@ public class Image {
     @TableId(type = IdType.AUTO)
     private Integer imageId;
     private String recordType;
-    private Integer recordId;
+    private String recordId;
     private String imagePath;
     private LocalDateTime uploadTime;
 }

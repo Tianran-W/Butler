@@ -83,7 +83,7 @@ CREATE TABLE tb_reimbursement_relation
 CREATE TABLE tb_image (
     image_id SERIAL PRIMARY KEY,
     record_type VARCHAR(20) NOT NULL CHECK (record_type IN ('borrow', 'return', 'scrap')),
-    record_id INTEGER NOT NULL,
+    record_id VARCHAR(20) NOT NULL,
     image_path VARCHAR(255) NOT NULL,
     upload_time TIMESTAMP DEFAULT NOW()
 );

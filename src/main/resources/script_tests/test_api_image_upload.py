@@ -49,7 +49,7 @@ def test_upload_image():
     url = f"{BASE_URL}/uploadImage"
     dummy_image_bytes = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xb4\x00\x00\x00\x00IEND\xaeB`\x82'
     files = {'file': ('test_upload.png', io.BytesIO(dummy_image_bytes), 'image/png')}
-    data = {'recordType': 'borrow', 'recordId': '101'}
+    data = {'recordType': 'borrow', 'recordId': '1000000000000000'}
 
     print(f"[*] 准备向 {url} 发送POST (multipart/form-data) 请求")
     print(f"[*] 表单数据: {data}")

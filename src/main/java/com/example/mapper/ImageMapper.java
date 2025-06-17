@@ -8,5 +8,5 @@ import java.util.List;
 
 @Mapper
 public interface ImageMapper extends BaseMapper<Image> {
-    List<Image> findByRecordTypeAndRecordId(@Param("recordType") String recordType, @Param("recordId") Integer recordId);
+    List<Image> findByRecordTypeAndRecordId(@Param("recordType") String recordType, @Param("recordId") String recordId);
 }
